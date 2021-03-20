@@ -1,0 +1,5 @@
+namespace Algo {
+	void start() {
+
+	}
+}
