@@ -9,17 +9,17 @@ int main() {
 	AppEvent ev;
 	while (true) {
 		ev = Visual::waitForEvent();
+		Node node(0, 0, false, 0);
 		switch (ev)
 		{
 		case AppEvent::DRAWNODE :
-			Node node( tempX, tempY, false, (uint16_t)state.nodes.size());
 			state.addNode(node);
 			break;
 		case AppEvent::CLEAR :
 			Visual::clean();
 			break;
 		case AppEvent::LAUNCH :
-			std::thread(Algo::start, NULL);
+			//std::thread(Algo::start, NULL);
 			break;
 		case AppEvent::EXIT :
 			exit(EXIT_SUCCESS);

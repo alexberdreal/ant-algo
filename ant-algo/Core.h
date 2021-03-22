@@ -2,19 +2,42 @@
 #define GENERAL
 #include <vector>
 
+struct Path;
+
 class Node {
 private:
 	const uint16_t id;
 	const bool isHome;
 public:
+	Node();
 	Node(double x, double y, bool isHome, uint16_t id);
 	double x, y;
 	bool operator==(const Node& toCompare);
 };
 
+class Position : Node
+{
+public:
+
+	struct Path {
+		Position* nextPosition;
+		double length;
+		double pheromone;
+	};
+
+	Path pathToNext;
+
+	Position(Position* pos, double len, double pheromone) {
+		pathToNext.length = len;
+		pathToNext.nextPosition = pos;
+		pathToNext.pheromone = pheromone;
+	}
+
+};
+
 class Ant {
 private:
-	Position* curPos;
+	Position *curPos;
 	double entireLength;
 public:
 	void addPosition(Node node);
@@ -34,18 +57,6 @@ public:
 enum class AppEvent
 {
 	CLEAR, LAUNCH, EXIT, DRAWNODE
-};
-
-struct Path {
-	Position* nextPosition;
-	double length;
-	double pheromone;
-};
-
-class Position : Node
-{
-public:
-	Path pathToNext;
 };
 
 #endif

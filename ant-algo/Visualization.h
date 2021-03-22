@@ -1,8 +1,10 @@
 #ifndef VISUALIZATION
 #define VISUALIZATION
 
+#include "Core.h"
+
 // Для передачи узлов в Source.cpp
-double tempX, tempY; 
+static double tempX, tempY; 
 
 namespace Visual {
 
