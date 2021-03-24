@@ -1,5 +1,5 @@
 #include "Visualization.h"
-//#include <SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 
 namespace Visual {
 
