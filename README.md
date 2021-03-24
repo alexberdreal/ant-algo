@@ -7,5 +7,9 @@
 sfml-graphics-d.lib
 sfml-window-d.lib
 sfml-system-d.lib
+4. Запустить программу ctrl + f5 - для создания папки Debug и exe-файла в ней
+5. Перенести файлы из папки "sfml/tomove" в папку "Debug"
+6. Раскомментировать весь код в Visualization.cpp
+7. Готово!
 
 * В Visualization.cpp в функцию drawWindow() добавлен тестовый код, который должен сработать при вызове в Source.cpp, если все подключено успешно *
