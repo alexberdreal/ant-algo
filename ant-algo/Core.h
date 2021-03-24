@@ -41,8 +41,8 @@ private:
 	double entireLength;
 public:
 	void addPosition(Node node);
-	void setEntireLength();
-	void getEntireLength();
+	void setEntireLength(double length);
+	double getEntireLength();
 };
 
 class State {

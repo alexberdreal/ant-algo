@@ -10,3 +10,11 @@ Node::Node() : id(0), isHome(true), x(0), y(0) {};
 void State::addNode(Node& node) {
 
 }
+
+double Ant::getEntireLength() {
+	return entireLength;
+}
+
+void Ant::setEntireLength(double entireLength) {
+	this->entireLength = entireLength;
+}
