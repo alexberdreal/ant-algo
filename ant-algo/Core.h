@@ -1,62 +1,70 @@
 #ifndef GENERAL
 #define GENERAL
 #include <vector>
+#include <string>
 
-struct Path;
+namespace core {
 
-class Node {
-private:
-	const uint16_t id;
-	const bool isHome;
-public:
-	Node();
-	Node(double x, double y, bool isHome, uint16_t id);
-	double x, y;
-	bool operator==(const Node& toCompare);
-};
 
-class Position : Node
-{
-public:
+	// считает длину в пикселях от А(х1, у1) до В(х2, у2)
+	double findLength(double x1, double y1, double x2, double y2);
 
-	struct Path {
-		Position* nextPosition;
-		double length;
-		double pheromone;
+	struct Path {                                               // Структура, представляющая тропу								
+		double length;											// Длина тропы (в пикселях)			
+		double pheromone;										// Количество феромона на тропе
 	};
 
-	Path pathToNext;
+	// ~~~~~~~~~~~~~~~~~~ Node - класс, представляющий узел ~~~~~~~~~~~~~~~~~~
 
-	Position(Position* pos, double len, double pheromone) {
-		pathToNext.length = len;
-		pathToNext.nextPosition = pos;
-		pathToNext.pheromone = pheromone;
-	}
 
-};
+	class Node {
+	private:
+		const uint16_t id;											// Идентификатор узла
+		const bool isHome;											// Является ли узел муравейником
+		const double x, y;											// Положение узла в пикселях
+	public:
+		std::vector<Path> paths;
+		Node();
+		Node(double x, double y, bool isHome, uint16_t id);
+		bool operator==(const Node& toCompare);						// Перегруженный оператор сравнения == (сравниваем узлы по id)
+		uint16_t getId();
+	};
 
-class Ant {
-private:
-	Position *curPos;
-	double entireLength;
-public:
-	void addPosition(Node node);
-	void setEntireLength(double length);
-	double getEntireLength();
-};
+	inline std::vector<Node> nodes;									// inline для weak-internal компоновки (везде, где подключается Core.h единственный инстанс nodes)
 
-class State {
-public:
-	std::vector<Node> nodes;
-	std::vector<Ant> ants;
+	inline uint16_t numberOfAnts;
 
-	void addNode(Node& node);
-	void addAnt(Ant& ant);
-};
+	enum class AppEvent
+	{
+		RESTART, LAUNCH, EXIT, DRAWNODE, FEED, CHOOSEANTS
+	};
 
-enum class AppEvent
-{
-	CLEAR, LAUNCH, EXIT, DRAWNODE
-};
+	struct AppState {
+		bool toDrawField;
+		bool isFieldTouchable;
+		bool hasFeedBtn;
+		std::string infoText;
+		bool hasExecutionBtn;
+		bool hasStopBtn;
+		bool hasContinueBtn;
+		bool hasTextField;
+	};
+
+	inline AppState state_started{ true, false, true, "Окно для информации", false, false, false, false };
+	inline AppState state_nodes{ false, true, false, "Расположите еду для муравьёв", false, false, true, false };
+	inline AppState state_ants{ false, false, false, "Введите количество муравьев", false, false, true, true };
+	inline AppState state_execution{ false, false, false, "", true, true, false, false };
+
+	// Муравей, который знает только о своей текущей позиции, пройденный путь и умеет обновлять текущую позицию
+	class Ant {
+	private:
+		Node* curPos;								// указатель на текущий узел, где находится муравей
+		std::vector<uint16_t> nodeIds;					// маршрут муравья
+	public:
+		double entireLength;						// пройденный путь
+		void updateCurrentPos(Node* position);		// обновить текущий узел, где находится муравей
+	};
+
+}
 
 #endif

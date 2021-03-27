@@ -1,31 +1,73 @@
 #include "Algorithm.h"
 #include <thread>
 
-State state;
+void fromStartToStop();
 
 int main() {
-	Visual::drawWindow();
-	bool isLaunched = false;
+
+	Visual::drawWindow(core::state_started);
+
+	fromStartToStop();
+
+}
+
+
+
+void fromStartToStop() {
 	AppEvent ev;
+
 	while (true) {
+
 		ev = Visual::waitForEvent();
-		Node node(0, 0, false, 0);
-		switch (ev)
-		{
-		case AppEvent::DRAWNODE :
-			state.addNode(node);
-			break;
-		case AppEvent::CLEAR :
-			Visual::clean();
-			break;
-		case AppEvent::LAUNCH :
-			//std::thread(Algo::start, NULL);
-			break;
-		case AppEvent::EXIT :
-			exit(EXIT_SUCCESS);
-			break;
-		default:
+
+		if (ev == AppEvent::FEED) break;						// Нажатие на "Покормить муравья"
+
+		if (ev == AppEvent::EXIT) exit(EXIT_SUCCESS);			// Выход из программы
+
+	}
+
+	Visual::drawWindow(core::state_nodes);
+
+	while (true) {
+
+		ev = Visual::waitForEvent();
+
+		if (ev == AppEvent::DRAWNODE) {							// Нажатие на поле 
+			// логика добавления новых узлов
+		}
+
+		if (ev == AppEvent::CHOOSEANTS) break;					// Нажатие на "Продолжить"
+
+		if (ev == AppEvent::EXIT) exit(EXIT_SUCCESS);			// Выход из программы
+
+	}
+
+	Visual::drawWindow(core::state_ants);
+
+	while (true) {
+
+		ev = Visual::waitForEvent();
+
+		if (ev == AppEvent::EXIT) exit(EXIT_SUCCESS);			// Выход из программы
+
+		if (ev == AppEvent::LAUNCH) {							// Запуск алгоритма В ОТДЕЛЬНОМ потоке.
+			Visual::drawWindow(state_execution);
+			// запуск алгоритма в отдельном потоке
 			break;
 		}
 	}
+
+	while (true) {
+		ev = Visual::waitForEvent();
+
+		if (ev == AppEvent::RESTART) {							// Рестарт программы (не забыть освободить поток!)
+			Algo::reset();
+			Visual::drawWindow(state_nodes);
+			break;
+		}
+
+		if (ev == AppEvent::EXIT) exit(EXIT_SUCCESS);			// Выход из программы
+	}
+
+	fromStartToStop();											// Выполнить заново (после AppEvent::RESTART)
 }

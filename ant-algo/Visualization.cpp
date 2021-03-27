@@ -1,11 +1,12 @@
 #include "Visualization.h"
+#include "Core.h"
 #include <SFML/Graphics.hpp>
 
 namespace Visual {
 
 	// Отрисовка главного окна и его внутреннего содержимого
-	void drawWindow() {
-		/*sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+	void drawWindow(const core::AppState& state) {
+		sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
 		sf::CircleShape shape(100.f);
 		shape.setFillColor(sf::Color::Green);
 
@@ -21,7 +22,7 @@ namespace Visual {
 			window.clear();
 			window.draw(shape);
 			window.display();
-		}*/
+		}
 	};
 
 	// Обновление статистики внутри окна
@@ -35,7 +36,7 @@ namespace Visual {
 	};
 
 	// Отрисовка пути A(x1, y1) --> B(x2, y2)
-	void drawPath() {
+	void drawPath(double x1, double y1, double x2, double y2) {
 
 	};
 
@@ -45,8 +46,8 @@ namespace Visual {
 	};
 
 	// Ожидание события
-	AppEvent waitForEvent() {
-		return AppEvent::LAUNCH;
+	core::AppEvent waitForEvent() {
+		return core::AppEvent::LAUNCH;
 	};
 
 	// Стереть граф, очистить статистику

@@ -9,7 +9,7 @@ static double tempX, tempY;
 namespace Visual {
 
 	// Отрисовка главного окна и его внутреннего содержимого
-	void drawWindow();
+	void drawWindow(const core::AppState& state);
 
 	// Обновление статистики внутри окна
 	void updateStatistics();
@@ -18,13 +18,13 @@ namespace Visual {
 	void drawNode(double x, double y);
 
 	// Отрисовка пути A(x1, y1) --> B(x2, y2)
-	void drawPath();
+	void drawPath(double x1, double y1, double x2, double y2);
 
 	// Изменение толщины тропы из феромонов A(x1,y1) --> B(x2,y2)
 	void updatePheromones(double x1, double y1, double x2, double y2); 
 
 	// Ожидание события
-	AppEvent waitForEvent();
+	core::AppEvent waitForEvent();
 
 	// Стереть граф, очистить статистику
 	void clean();
