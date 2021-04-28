@@ -1,12 +1,30 @@
 #include "Core.h"
 #include <math.h>
 
-core::Node::Node(double x, double y, bool isHome, uint16_t id) : x(x), y(y), isHome(isHome), id(id) {};
+
+core::Node::Node() : isHome(true), x(10), y(10), id(0) { };
+
+
+core::Node::Node(double x, double y, unsigned id) : x(x), y(y), isHome(false), id(id) { };
+
+void core::Node::initPaths() {
+	//srand(time(NULL));
+
+	unsigned i = 0;
+
+	for (auto& el : nodes) {
+		if (mapContainsKey(nodes[i].paths, el.getId())) {
+			paths.insert(std::make_pair(i, nodes[i].paths[el.getId()]));
+		}
+		if (el.getId() != this->id) {
+			paths.insert(std::make_pair(el.getId(), Path{ findLength(x, y, el.x, el.y), 0.2 }));
+		}
+	}
+}
+
 bool core::Node::operator==(const core::Node& toCompare) {
 	return this->id == toCompare.id;
 }	
-
-core::Node::Node() : id(0), isHome(true), x(0), y(0) {};	// Конструктор для муравейника
 
 void core::Ant::updateCurrentPos(core::Node* node) {
 	this->entireLength += this->curPos->paths[node->getId()].length;
@@ -14,7 +32,7 @@ void core::Ant::updateCurrentPos(core::Node* node) {
 	this->nodeIds.push_back(node->getId());
 }
 
-uint16_t core::Node::getId() {
+unsigned core::Node::getId() const {
 	return this->id;
 }
 

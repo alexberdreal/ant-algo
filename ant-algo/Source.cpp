@@ -4,10 +4,29 @@
 void fromStartToStop();
 
 int main() {
+	srand(time(NULL));
+	nodes.push_back(Node());
+	nodes.push_back(Node(40, 20, 1));
+	nodes.push_back(Node(100, 130, 2));
+	nodes.push_back(Node(60, 50, 3));
+	nodes.push_back(Node(230, 50, 4));
+	nodes.push_back(Node(64, 100, 5));
+	nodes.push_back(Node(69, 30, 6));
+	nodes.push_back(Node(90, 0, 7));
 
-	Visual::drawWindow(core::state_started);
+	for (size_t i = 0; i < nodes.size(); ++i) {
+		nodes[i].initPaths();
+	}
+	
+	numberOfAnts = 6;
 
-	fromStartToStop();
+	Algo::start();
+
+
+
+	//Visual::drawWindow(core::state_started);
+
+	//fromStartToStop();
 
 }
 

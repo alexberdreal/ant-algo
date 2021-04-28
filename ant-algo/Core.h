@@ -1,10 +1,28 @@
 #ifndef GENERAL
 #define GENERAL
 #include <vector>
+#include <map>
+#include <random>
+#include <time.h>
 #include <string>
+#include <iostream>
+#include <algorithm>
+#include <chrono>
+#include <thread>
 
 namespace core {
 
+	template <class T, class R, class K>
+	bool mapContainsKey(std::map<T, R>& map, K key) {
+		if (map.find(key) == map.end()) return false;
+		return true;
+	}
+
+	template <class T, class R, class K>
+	bool mapContainsKey(std::multimap<T, R>& map, K key) {
+		if (map.find(key) == map.end()) return false;
+		return true;
+	}
 
 	// считает длину в пикселях от А(х1, у1) до В(х2, у2)
 	double findLength(double x1, double y1, double x2, double y2);
@@ -19,18 +37,24 @@ namespace core {
 
 	class Node {
 	private:
-		const uint16_t id;											// Идентификатор узла
+		const unsigned id;											// Идентификатор узла (id = 0, если муравейник)
 		const bool isHome;											// Является ли узел муравейником
 		const double x, y;											// Положение узла в пикселях
 	public:
-		std::vector<Path> paths;
-		Node();
-		Node(double x, double y, bool isHome, uint16_t id);
+		std::map<unsigned, Path> paths;									// paths[i] - путь из this в Node, id которого равно i. Инициализируется внутри конструктора
+		
+		Node();			// Конструктор для муравейника
+
+		Node(double x, double y, unsigned id);			// Конструктор для узлов пищи
+
+		void initPaths();
+
 		bool operator==(const Node& toCompare);						// Перегруженный оператор сравнения == (сравниваем узлы по id)
-		uint16_t getId();
+
+		unsigned getId() const;											// Геттер id
 	};
 
-	inline std::vector<Node> nodes;									// inline для weak-internal компоновки (везде, где подключается Core.h единственный инстанс nodes)
+	inline std::vector<Node> nodes;									// inline для weak-internal компоновки (везде, где подключается																		Core.h единственный инстанс nodes)
 
 	inline uint16_t numberOfAnts;
 
