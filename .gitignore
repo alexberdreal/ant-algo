@@ -3,7 +3,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+<<<<<<< HEAD
 #lib folders
+=======
+#libs res
+>>>>>>> c20a936e3bc1927cd66e96f9cdbf60505da71979
 sfml-res/
 
 # User-specific files
