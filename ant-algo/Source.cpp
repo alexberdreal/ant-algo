@@ -1,10 +1,36 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "Algorithm.h"
+#include "Visualization.h"
 #include <thread>
 
 void fromStartToStop();
 
-int main() {
+int main(int argc, char* argv[]) {
 	
+	if (argc > 1)
+	for (int i = 1; i < argc; i += 2) {
+		if (!strcmp(argv[i], "-t")) {
+			FILE* file = fopen(argv[i + 1], "r");
+			nodes.push_back(Node());
+			size_t i = 1;
+			while (!feof(file)) {
+				double x, y;
+				printf("added %u\n", i);
+				fscanf(file, "%lf", &x);
+				fscanf(file, "%lf", &y);
+				nodes.push_back(Node(x, y, i++));
+			}
+			numberOfAnts = 6;
+			for (int i = 0; i < nodes.size(); ++i) {
+				printf("here");
+				nodes[i].initPaths();
+			}
+		}
+		else {
+			printf("This flag doesn't exist\n");
+		}
+	}
+
 	srand(time(NULL));
 	
 	// initNodes();                                      инициализируем узлы 
@@ -15,11 +41,11 @@ int main() {
 	
 	// numberOfAnts = 6;								 указываем количество муравьев
 
-	// Algo::start();									 запускаем алгоритм
+	 Algo::start();									 //запускаем алгоритм
 
 
 
-	//Visual::drawWindow(core::state_started);
+	Visual::drawWindow(core::state_started);
 
 	//fromStartToStop();
 
