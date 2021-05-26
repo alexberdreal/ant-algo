@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 	
 	// numberOfAnts = 6;								 указываем количество муравьев
 
-	// Algo::start();									 //запускаем алгоритм
+	 Algo::start();									 //запускаем алгоритм
 
 
 

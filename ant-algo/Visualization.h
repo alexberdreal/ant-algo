@@ -18,7 +18,7 @@ static double tempX, tempY;
 
 class Button {
 public:
-	Button(std::string input, sf::Vector2f pos, sf::Vector2f size, sf::Color fill, sf::Color outline, float out_thick, const sf::Font& font, int textSize, sf::Color textColor) {
+	Button(std::string input, sf::Vector2f pos, sf::Vector2f size, sf::Color fill, sf::Color outline, float out_thick, sf::Font font, int textSize, sf::Color textColor) {
 		button.setPosition(pos);
 		button.setSize(size);
 		button.setFillColor(fill);
@@ -175,8 +175,6 @@ private:
 namespace Visual {
 
 	inline sf::RenderWindow window(sf::VideoMode(1400, 768), "SFML works!");
-
-	inline sf::Font mainFont;
 
 	// Отрисовка главного окна и его внутреннего содержимого
 	void drawWindow(const core::AppState& state);

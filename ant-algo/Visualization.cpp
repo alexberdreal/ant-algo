@@ -9,14 +9,17 @@ namespace Visual {
 	// Отрисовка главного окна и его внутреннего содержимого
 	void drawWindow(const core::AppState& state) {
 
+
+
+
 		if (&state == &core::state_started) {
 			TextBox textbox1(12, sf::Color::Black, true);
-			//sf::Font font;
-			if (!mainFont.loadFromFile("../sources/Open_Sans/OpenSans-Light.ttf"))
+			sf::Font font;
+			if (!font.loadFromFile("C:/Users/Оля/repo_copy/repo/sources/Open_Sans/OpenSans-Light.ttf"))
 			{
 				std::cout << "Error while loading the font from the file" << std::endl;
 			}
-			textbox1.setFont(mainFont);
+			textbox1.setFont(font);
 			textbox1.setPosition({ 10,10 });
 
 			//window setup
@@ -28,29 +31,28 @@ namespace Visual {
 
 			//grass
 			sf::Texture grass;
-			if (!grass.loadFromFile("../sources/Grass.png"))
+			if (!grass.loadFromFile("C:/Users/Оля/repo_copy/repo/sources/Grass.png"))
 			{
 				std::cout << "Error" << std::endl;
 			}
 			//sf::Sprite sprite_grass(grass, sf::IntRect(0, 0, 100, 100));
-			
-			sf::Sprite sprite_grass(grass, sf::IntRect( 100, 100, 300, 300 ));
-			//sprite_grass.setPosition((window.getSize().x / 23) * 0.5, (window.getSize().y / 10) * 1.5);
-			sprite_grass.setTexture(grass);
 
-			Button btn1("dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddClick", { 10,10 }, { 100,100 }, sf::Color::White, sf::Color::Black, 2, mainFont, 14, sf::Color::Black);
+			sf::Sprite sprite_grass(grass, sf::IntRect(0, 0, static_cast<double>((window.getSize().x / 3) * 2), static_cast<double>((window.getSize().y / 10) * 8)));
+			sprite_grass.setPosition((window.getSize().x / 23) * 0.5, (window.getSize().y / 10) * 1.5);
+
+			Button btn1("Click", { 10,10 }, { 100,100 }, sf::Color::White, sf::Color::Black, 2, font, 14, sf::Color::Black);
 
 			sf::Texture ant;
-			if (!ant.loadFromFile("../sources/Ant.png"))
+			if (!grass.loadFromFile("C:/Users/Оля/repo_copy/repo/sources/Ant.png"))
 			{
 				std::cout << "Error" << std::endl;
 			}
 			sf::Sprite sprite_ant(ant, sf::IntRect(0, 0, static_cast<double>(window.getSize().x / 3), static_cast<double>((window.getSize().y / 10) * 6)));
-			sprite_ant.setPosition(100, 100);
+			sprite_ant.setPosition((window.getSize().x / 23) * 0.5 * 2 + static_cast<double>((window.getSize().x / 3) * 2), (window.getSize().y / 10) * 1.5);
 			sprite_ant.setScale(sf::Vector2f(0.2, 0.2));
 
 			sf::Texture btn;
-			if (!btn.loadFromFile("../sources/Button.png"))
+			if (!grass.loadFromFile("C:/Users/Оля/repo_copy/repo/sources/Button.png"))
 			{
 				std::cout << "Error" << std::endl;
 			}
@@ -94,7 +96,7 @@ namespace Visual {
 				}
 				window.clear(sf::Color::White);
 				window.draw(sprite_grass);
-				textbox1.drawTo(window);
+				//textbox1.drawTo(window);
 				btn1.drawTo(window);
 				window.draw(sprite_ant);
 				window.draw(sprite_btn);
