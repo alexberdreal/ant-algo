@@ -13,6 +13,7 @@ constexpr auto DELETE_KEY = 8;
 constexpr auto ENTER_KEY = 13;
 constexpr auto ESCAPE_KEY = 27;
 
+
 // Для передачи узлов в Source.cpp
 static double tempX, tempY;
 void prepareVisual() {

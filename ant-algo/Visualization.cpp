@@ -5,6 +5,7 @@
 #include <string>
 
 namespace Visual {
+	//meow2 commit
 	//meow commit
 	// Отрисовка главного окна и его внутреннего содержимого
 	void drawWindow(const core::AppState& state) {
