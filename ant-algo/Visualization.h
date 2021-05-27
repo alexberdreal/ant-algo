@@ -15,10 +15,16 @@ constexpr auto ESCAPE_KEY = 27;
 
 // Для передачи узлов в Source.cpp
 static double tempX, tempY;
-
+void prepareVisual() {
+	
+	if (!font.loadFromFile("C:/Users/Оля/repo_copy/repo/sources/Open_Sans/OpenSans-Light.ttf"))
+	{
+		std::cout << "Error while loading the font from the file" << std::endl;
+	};
+}
 class Button {
 public:
-	Button(std::string input, sf::Vector2f pos, sf::Vector2f size, sf::Color fill, sf::Color outline, float out_thick, sf::Font font, int textSize, sf::Color textColor) {
+	Button(std::string input, sf::Vector2f pos, sf::Vector2f size, sf::Color fill, sf::Color outline, float out_thick, sf::Font &font, int textSize, sf::Color textColor) {
 		button.setPosition(pos);
 		button.setSize(size);
 		button.setFillColor(fill);
@@ -173,7 +179,7 @@ private:
 };
 
 namespace Visual {
-
+	sf::Font font;
 	inline sf::RenderWindow window(sf::VideoMode(1400, 768), "SFML works!");
 
 	// Отрисовка главного окна и его внутреннего содержимого

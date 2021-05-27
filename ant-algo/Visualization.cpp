@@ -5,7 +5,7 @@
 #include <string>
 
 namespace Visual {
-
+	//meow commit
 	// Отрисовка главного окна и его внутреннего содержимого
 	void drawWindow(const core::AppState& state) {
 
@@ -14,11 +14,7 @@ namespace Visual {
 
 		if (&state == &core::state_started) {
 			TextBox textbox1(12, sf::Color::Black, true);
-			sf::Font font;
-			if (!font.loadFromFile("C:/Users/Оля/repo_copy/repo/sources/Open_Sans/OpenSans-Light.ttf"))
-			{
-				std::cout << "Error while loading the font from the file" << std::endl;
-			}
+		
 			textbox1.setFont(font);
 			textbox1.setPosition({ 10,10 });
 
@@ -43,7 +39,7 @@ namespace Visual {
 			Button btn1("Click", { 10,10 }, { 100,100 }, sf::Color::White, sf::Color::Black, 2, font, 14, sf::Color::Black);
 
 			sf::Texture ant;
-			if (!grass.loadFromFile("C:/Users/Оля/repo_copy/repo/sources/Ant.png"))
+			if (!grass.loadFromFile("../sources/Ant.png"))
 			{
 				std::cout << "Error" << std::endl;
 			}
@@ -52,7 +48,7 @@ namespace Visual {
 			sprite_ant.setScale(sf::Vector2f(0.2, 0.2));
 
 			sf::Texture btn;
-			if (!grass.loadFromFile("C:/Users/Оля/repo_copy/repo/sources/Button.png"))
+			if (!grass.loadFromFile("../sources/Button.png"))
 			{
 				std::cout << "Error" << std::endl;
 			}
