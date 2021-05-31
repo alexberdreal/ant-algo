@@ -9,6 +9,7 @@
 #libs res
 >>>>>>> c20a936e3bc1927cd66e96f9cdbf60505da71979
 sfml-res/
+SFML-2.5.1/
 
 # User-specific files
 *.rsuser
