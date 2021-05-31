@@ -8,15 +8,17 @@ namespace Visual {
 	//meow2 commit
 	//meow commit
 	// Отрисовка главного окна и его внутреннего содержимого
+	void prepareVisual() {
+		if (!font_1.loadFromFile("C:/Users/Оля/repo_copy/repo/sources/Open_Sans/OpenSans-Light.ttf"))
+		{
+			std::cout << "Error while loading the font from the file" << std::endl;
+		};
+	}
 	void drawWindow(const core::AppState& state) {
-
-
-
-
 		if (&state == &core::state_started) {
 			TextBox textbox1(12, sf::Color::Black, true);
 		
-			textbox1.setFont(font);
+			textbox1.setFont(font_1);
 			textbox1.setPosition({ 10,10 });
 
 			//window setup
@@ -25,6 +27,7 @@ namespace Visual {
 
 			//white background
 			window.clear(sf::Color::White);
+			
 
 			//grass
 			sf::Texture grass;
@@ -37,10 +40,12 @@ namespace Visual {
 			sf::Sprite sprite_grass(grass, sf::IntRect(0, 0, static_cast<double>((window.getSize().x / 3) * 2), static_cast<double>((window.getSize().y / 10) * 8)));
 			sprite_grass.setPosition((window.getSize().x / 23) * 0.5, (window.getSize().y / 10) * 1.5);
 
-			Button btn1("Click", { 10,10 }, { 100,100 }, sf::Color::White, sf::Color::Black, 2, font, 14, sf::Color::Black);
+			//Button btn1("Click", { 10,10 }, { 100,100 }, sf::Color::White, sf::Color::Black, 2, font_1, 14, sf::Color::Black);
+
+			Button btn1 = Button::builder().setPosition({200,200}).build();
 
 			sf::Texture ant;
-			if (!grass.loadFromFile("../sources/Ant.png"))
+			if (!ant.loadFromFile("../sources/Ant.png"))
 			{
 				std::cout << "Error" << std::endl;
 			}
@@ -49,7 +54,7 @@ namespace Visual {
 			sprite_ant.setScale(sf::Vector2f(0.2, 0.2));
 
 			sf::Texture btn;
-			if (!grass.loadFromFile("../sources/Button.png"))
+			if (!btn.loadFromFile("../sources/Button.png"))
 			{
 				std::cout << "Error" << std::endl;
 			}
