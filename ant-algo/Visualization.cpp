@@ -5,84 +5,17 @@
 #include <string>
 
 namespace Visual {
-	//meow2 commit
-	//meow commit
-	// Отрисовка главного окна и его внутреннего содержимого
-	void drawl(sf::Vector2f p1, sf::Vector2f p2) {
 
-		const float len = (float)core::findLength(p1.x, p1.y, p2.x, p2.y);
-		const float thickness = 3.0;
-
-		#define TODEGREE(R) R * (180 / M_PI) 
-
-		sf::CircleShape ss1;
-		sf::CircleShape ss2;
-		ss1.setFillColor(sf::Color::Red);
-		ss2.setFillColor(sf::Color::Red);
-		ss1.setPosition(p1);
-		ss2.setPosition(p2);
-		ss1.setRadius(2);
-		ss2.setRadius(2);
-
-		/////////////////////////////////////////////
-
-		sf::RectangleShape rs;
-		rs.setFillColor(sf::Color::Black);
-
-		if (p1.y == p2.y) {
-			if (p2.x < p1.x) {
-				rs.setPosition(p2);
-				rs.setSize({ len, thickness });
-			}
-			else {
-				rs.setPosition(p1);
-				rs.setSize({ len, thickness });
-			}
-		}
-		else if (p1.x == p2.x) {
-			if (p2.y < p1.y) {
-				rs.setPosition(p2);
-				rs.setSize({ thickness, len });
-			}
-			else {
-				rs.setPosition(p1);
-				rs.setSize({ thickness, len });
-			}
-		}
-		else {
-			rs.setPosition(p1);
-			rs.setSize({ len, thickness });
-
-			if (p2.x > p1.x && p1.y > p2.y) {
-				rs.setRotation(-TODEGREE(atan((p1.y - p2.y) / (p2.x - p1.x))));
-			}
-			else if (p1.x > p2.x && p1.y > p2.y) {
-				rs.setRotation(-90-TODEGREE(atan((p1.x - p2.x) / (p1.y - p2.y))));
-			}
-			else if (p1.x < p2.x && p2.y > p1.y) {
-				rs.setRotation(TODEGREE(atan((p2.y - p1.y) / (p2.x - p1.x))));
-			}
-			else if (p1.x > p2.x && p2.y > p1.y) {
-				rs.setRotation(90 + TODEGREE(atan((p1.x - p2.x) / (p2.y - p1.y))));
-			}
-		}
-
-		Visual::window.draw(rs);
-
-		/////////////////////////////////////////////
-		Visual::window.draw(ss1);
-		Visual::window.draw(ss2);
-	}
 	void prepareVisual() {
 		if (!font_1.loadFromFile("../sources/Open_Sans/OpenSans-Light.ttf"))
 		{
-			std::cout << "Error while loading the font from the file" << std::endl;	
+			std::cout << "Error while loading the font from the file" << std::endl;
 		};
 	}
 	void drawWindow(const core::AppState& state) {
 		if (&state == &core::state_started) {
 			TextBox textbox1(12, sf::Color::Black, true);
-		
+
 			textbox1.setFont(font_1);
 			textbox1.setPosition({ 10,10 });
 
@@ -92,7 +25,7 @@ namespace Visual {
 
 			//white background
 			window.clear(sf::Color::White);
-			
+
 
 			//grass
 			sf::Texture grass;
@@ -107,7 +40,7 @@ namespace Visual {
 
 			//Button btn1("Click", { 10,10 }, { 100,100 }, sf::Color::White, sf::Color::Black, 2, font_1, 14, sf::Color::Black);
 
-			Button btn1 = Button::builder().setPosition({200,200}).build();
+			Button btn1 = Button::builder().setPosition({ 200,200 }).build();
 
 			sf::Texture ant;
 			if (!ant.loadFromFile("../sources/Ant.png"))
@@ -169,7 +102,7 @@ namespace Visual {
 				window.draw(sprite_btn);
 				for (size_t i = 0; i < core::nodes.size() - 1; ++i) {
 					for (size_t j = i + 1; j < core::nodes.size(); ++j) {
-						drawl({ (float)core::nodes[i].getX(), (float)core::nodes[i].getY() }, { (float)core::nodes[j].getX(), (float)core::nodes[j].getY() });
+						drawPath({ (float)core::nodes[i].getX(), (float)core::nodes[i].getY() }, { (float)core::nodes[j].getX(), (float)core::nodes[j].getY() });
 					}
 				}
 				window.display();
@@ -192,8 +125,70 @@ namespace Visual {
 	};
 
 	// Отрисовка пути A(x1, y1) --> B(x2, y2)
-	void drawPath(double x1, double y1, double x2, double y2) {
+	void drawPath(sf::Vector2f p1, sf::Vector2f p2) {
 
+		const float len = (float)core::findLength(p1.x, p1.y, p2.x, p2.y);
+		const float thickness = 3.0;
+
+		#define TODEGREE(R) R * (180 / M_PI) 
+
+		sf::CircleShape ss1;
+		sf::CircleShape ss2;
+		ss1.setFillColor(sf::Color::Red);
+		ss2.setFillColor(sf::Color::Red);
+		ss1.setPosition(p1);
+		ss2.setPosition(p2);
+		ss1.setRadius(2);
+		ss2.setRadius(2);
+
+		/////////////////////////////////////////////
+
+		sf::RectangleShape rs;
+		rs.setFillColor(sf::Color::Black);
+
+		if (p1.y == p2.y) {
+			if (p2.x < p1.x) {
+				rs.setPosition(p2);
+				rs.setSize({ len, thickness });
+			}
+			else {
+				rs.setPosition(p1);
+				rs.setSize({ len, thickness });
+			}
+		}
+		else if (p1.x == p2.x) {
+			if (p2.y < p1.y) {
+				rs.setPosition(p2);
+				rs.setSize({ thickness, len });
+			}
+			else {
+				rs.setPosition(p1);
+				rs.setSize({ thickness, len });
+			}
+		}
+		else {
+			rs.setPosition(p1);
+			rs.setSize({ len, thickness });
+
+			if (p2.x > p1.x && p1.y > p2.y) {
+				rs.setRotation(-TODEGREE(atan((p1.y - p2.y) / (p2.x - p1.x))));
+			}
+			else if (p1.x > p2.x && p1.y > p2.y) {
+				rs.setRotation(-90 - TODEGREE(atan((p1.x - p2.x) / (p1.y - p2.y))));
+			}
+			else if (p1.x < p2.x && p2.y > p1.y) {
+				rs.setRotation(TODEGREE(atan((p2.y - p1.y) / (p2.x - p1.x))));
+			}
+			else if (p1.x > p2.x && p2.y > p1.y) {
+				rs.setRotation(90 + TODEGREE(atan((p1.x - p2.x) / (p2.y - p1.y))));
+			}
+		}
+
+		Visual::window.draw(rs);
+
+		/////////////////////////////////////////////
+		Visual::window.draw(ss1);
+		Visual::window.draw(ss2);
 	};
 
 	// Изменение толщины тропы из феромонов A(x1,y1) --> B(x2,y2)

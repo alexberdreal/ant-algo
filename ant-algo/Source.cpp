@@ -9,7 +9,6 @@ void initNodes();
 
 int main(int argc, char* argv[]) {
 	Visual::prepareVisual();
-	initNodes();
 	if (argc > 1)
 	for (int i = 1; i < argc; i += 2) {
 		if (!strcmp(argv[i], "-t")) {
@@ -36,7 +35,7 @@ int main(int argc, char* argv[]) {
 
 	srand(time(NULL));
 	
-	// initNodes();                                      инициализируем узлы 
+	 initNodes();                                      // инициализируем узлы 
 
 	// for (size_t i = 0; i < nodes.size(); ++i) {
 	//	nodes[i].initPaths();							 прокладываем пути между каждым узлом

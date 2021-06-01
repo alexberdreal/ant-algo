@@ -212,8 +212,8 @@ namespace Visual {
 	// Отрисовка вершин графа (муравейника и пищи)
 	void drawNode(double x, double y);
 
-	// Отрисовка пути A(x1, y1) --> B(x2, y2)
-	void drawPath(double x1, double y1, double x2, double y2);
+	// Отрисовка пути p1 --> p2
+	void drawPath(sf::Vector2f p1, sf::Vector2f p2);
 
 	// Изменение толщины тропы из феромонов A(x1,y1) --> B(x2,y2)
 	void updatePheromones(double x1, double y1, double x2, double y2);
