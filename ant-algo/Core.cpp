@@ -2,7 +2,7 @@
 #include <math.h>
 
 
-core::Node::Node() : isHome(true), x(10), y(10), id(0) { };
+core::Node::Node() : isHome(true), x(150), y(150), id(0) { };
 
 
 core::Node::Node(double x, double y, unsigned id) : x(x), y(y), isHome(false), id(id) { };

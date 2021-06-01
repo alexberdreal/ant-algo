@@ -3,12 +3,15 @@
 #include <vector>
 #include <map>
 #include <random>
+#include <cmath>
 #include <time.h>
 #include <string>
 #include <iostream>
 #include <algorithm>
 #include <chrono>
 #include <thread>
+
+constexpr double M_PI = 3.14159265358979323846;
 
 namespace core {
 	template <class T, class R, class K>
@@ -51,6 +54,9 @@ namespace core {
 		bool operator==(const Node& toCompare);						// Перегруженный оператор сравнения == (сравниваем узлы по id)
 
 		unsigned getId() const;											// Геттер id
+
+		double getX() { return x; }
+		double getY() { return y; }
 	};
 
 	inline std::vector<Node> nodes;									// inline для weak-internal компоновки (везде, где подключается																		Core.h единственный инстанс nodes)

@@ -1,12 +1,15 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "Algorithm.h"
 #include "Visualization.h"
-#include <thread>
+#include <thread> 
 
 void fromStartToStop();
 
+void initNodes();
+
 int main(int argc, char* argv[]) {
 	Visual::prepareVisual();
+	initNodes();
 	if (argc > 1)
 	for (int i = 1; i < argc; i += 2) {
 		if (!strcmp(argv[i], "-t")) {
@@ -53,13 +56,13 @@ int main(int argc, char* argv[]) {
 
 void initNodes() {
 	nodes.push_back(Node());
-	nodes.push_back(Node(40, 20, 1));
-	nodes.push_back(Node(100, 130, 2));
-	nodes.push_back(Node(600, 50, 3));
-	nodes.push_back(Node(230, 50, 4));
-	nodes.push_back(Node(64, 100, 5));
-	nodes.push_back(Node(69, 10, 6));
-	nodes.push_back(Node(90, 0, 7));
+	nodes.push_back(Node(240, 220, 1));
+	nodes.push_back(Node(300, 130, 2));
+	nodes.push_back(Node(600, 290, 3));
+	nodes.push_back(Node(930, 350, 4));
+	nodes.push_back(Node(654, 400, 5));
+	nodes.push_back(Node(249, 210, 6));
+	nodes.push_back(Node(790, 270, 7));
 }
 
 

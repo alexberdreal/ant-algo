@@ -197,7 +197,7 @@ namespace Visual {
 		}
 	};
 	
-	 sf::Font font_1;
+	inline sf::Font font_1;
 	inline sf::RenderWindow window(sf::VideoMode(1400, 768), "SFML works!");
 
 	//Загрузка шрифтов и текстур
