@@ -136,7 +136,6 @@ namespace Visual {
 			bool b = false;
 
 			while (window.isOpen()) {
-				if (b) mut.lock();
 				sf::Event event;					//class Event
 				while (window.pollEvent(event)) {
 					switch (event.type) {			//enum type
@@ -163,8 +162,9 @@ namespace Visual {
 				}
 				window.clear(sf::Color::White);
 				window.draw(grassSprite);
-				for (auto& el : core::routeVec) {
-					drawPath({ el[0], el[1] }, { el[2], el[3] });
+				for (size_t i = 0; i < core::routeVec.size(); ++i) {
+					try { drawPath({ core::routeVec.at(i).at(0), core::routeVec.at(i).at(1) }, { core::routeVec.at(i).at(2), core::routeVec.at(i).at(3) }); }
+					catch (...) { std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl; break; }
 				}
 				for (auto& el : core::nodes) {
 					drawNode(el.getX(), el.getY());
@@ -174,7 +174,6 @@ namespace Visual {
 
 				window.display();
 				b = true;
-				mut.unlock();
 			}
 			/*window.clear();
 			textbox1.drawTo(window);

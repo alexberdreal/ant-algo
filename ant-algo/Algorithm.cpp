@@ -67,7 +67,6 @@ namespace Algo {
 	};
 
 	void start() {
-		mut.lock();
 		std::vector<std::vector<unsigned>> routes;
 		std::vector<unsigned> vec;
 		int c = 1;
@@ -78,9 +77,7 @@ namespace Algo {
 				vec.push_back(0);
 				while (vec.size() != nodes.size() + 1) {
 					current = findNext(*current, vec);
-					 mut.unlock();
-					std::this_thread::sleep_for(std::chrono::milliseconds(300));
-					mut.lock();
+					std::this_thread::sleep_for(std::chrono::milliseconds(10));
 					if (current == nullptr) throw std::runtime_error("The next node is not defined");
 				}
 				for (auto it = vec.begin(); it != vec.end(); ++it) {		// Весь путь одного муравья

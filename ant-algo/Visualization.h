@@ -77,7 +77,6 @@ namespace Visual {
 			text.setCharacterSize(30);
 			text.setFillColor(sf::Color::Black);
 			text.setFont(font_1);
-			std::cout << text.getString().toUtf8().c_str() << std::endl;
 			window.draw(text);
 		}
 
