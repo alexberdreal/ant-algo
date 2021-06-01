@@ -37,17 +37,22 @@ int main(int argc, char* argv[]) {
 	
 	 initNodes();                                      // инициализируем узлы 
 
-	// for (size_t i = 0; i < nodes.size(); ++i) {
-	//	nodes[i].initPaths();							 прокладываем пути между каждым узлом
-	// }
+	 for (size_t i = 0; i < nodes.size(); ++i) {
+		nodes[i].initPaths();							// прокладываем пути между каждым узлом
+	 }
 	
-	// numberOfAnts = 6;								 указываем количество муравьев
-
-	 //Algo::start();									 //запускаем алгоритм
+	 numberOfAnts = 6;								// указываем количество муравьев
 
 
+	// Visual::drawWindow(core::state_started);
 
-	Visual::drawWindow(core::state_started);
+	// Visual::drawWindow(core::state_nodes);
+	// Visual::drawWindow(core::state_ants);
+
+	 std::thread th(Algo::start);									 //запускаем алгоритм
+	 std::this_thread::sleep_for(std::chrono::seconds(1));
+
+	Visual::drawWindow(core::state_execution);
 
 	//fromStartToStop();
 
@@ -55,12 +60,12 @@ int main(int argc, char* argv[]) {
 
 void initNodes() {
 	nodes.push_back(Node());
-	nodes.push_back(Node(240, 220, 1));
-	nodes.push_back(Node(300, 130, 2));
+	nodes.push_back(Node(240, 200, 1));
+	nodes.push_back(Node(300, 630, 2));
 	nodes.push_back(Node(600, 290, 3));
 	nodes.push_back(Node(930, 350, 4));
 	nodes.push_back(Node(654, 400, 5));
-	nodes.push_back(Node(249, 210, 6));
+	nodes.push_back(Node(249, 510, 6));
 	nodes.push_back(Node(790, 270, 7));
 }
 

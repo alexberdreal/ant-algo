@@ -9,9 +9,12 @@
 #include <iostream>
 #include <algorithm>
 #include <chrono>
+#include <mutex>
 #include <thread>
 
 constexpr double M_PI = 3.14159265358979323846;
+
+inline std::mutex mut;
 
 namespace core {
 	template <class T, class R, class K>
@@ -55,11 +58,13 @@ namespace core {
 
 		unsigned getId() const;											// Геттер id
 
-		double getX() { return x; }
-		double getY() { return y; }
+		double getX() const { return x; }
+		double getY() const { return y; }
 	};
 
 	inline std::vector<Node> nodes;									// inline для weak-internal компоновки (везде, где подключается																		Core.h единственный инстанс nodes)
+
+	inline std::vector<std::vector<float>> routeVec;
 
 	inline uint16_t numberOfAnts;
 

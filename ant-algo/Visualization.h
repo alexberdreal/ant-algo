@@ -17,6 +17,12 @@ constexpr auto ESCAPE_KEY = 27;
 static double tempX, tempY;
 
 namespace Visual {
+
+	inline sf::Font font_1;
+	inline sf::RenderWindow window(sf::VideoMode(1400, 768), "SFML works!");
+	inline sf::Sprite nodeSprite;
+	inline sf::Sprite grassSprite;
+
 	class Button {
 	public:
 		class builder;
@@ -68,9 +74,11 @@ namespace Visual {
 		}
 		void drawTo(sf::RenderWindow& window) {
 			window.draw(button);
-			//std::cout << text.getString().getData();
+			text.setCharacterSize(30);
+			text.setFillColor(sf::Color::Black);
+			text.setFont(font_1);
+			std::cout << text.getString().toUtf8().c_str() << std::endl;
 			window.draw(text);
-
 		}
 
 	private:
@@ -80,7 +88,13 @@ namespace Visual {
 
 	class Button::builder { //definition
 	public:
-		builder& setPosition(sf::Vector2f pos) { button.setPosition(pos); return *this; };
+		builder& setPosition(sf::Vector2f pos) {
+			button.setPosition(pos);
+			float xPos = pos.x + button.getGlobalBounds().width / 2 - text.getGlobalBounds().width / 2;
+			float yPos = pos.y + button.getGlobalBounds().height / 2 - text.getGlobalBounds().height / 2;
+			text.setPosition(xPos, yPos); 
+			return *this; 
+		};
 		builder& setSize(sf::Vector2f size) { button.setSize(size); return *this; }
 		builder& setFillColor(sf::Color color) { button.setFillColor(color); return *this; };
 		builder& setOutlineColor(sf::Color color) { button.setOutlineColor(color); return *this; };
@@ -196,9 +210,6 @@ namespace Visual {
 			textbox.setString(text.str() + "_");			//set the string to display
 		}
 	};
-	
-	inline sf::Font font_1;
-	inline sf::RenderWindow window(sf::VideoMode(1400, 768), "SFML works!");
 
 	//Загрузка шрифтов и текстур
 	void prepareVisual();

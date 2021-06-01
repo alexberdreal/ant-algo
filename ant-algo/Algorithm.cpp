@@ -5,6 +5,7 @@ namespace Algo {
 	core::Node* findNext(const Node& node, std::vector<unsigned>& eaten) noexcept {
 		if (eaten.size() == nodes.size()) {
 			eaten.push_back(0);
+			routeVec.push_back({ (float)node.getX(), (float)node.getY(), (float)nodes[0].getX(), (float)nodes[0].getY() });
 			return &nodes[0];
 		}
 		double r = (rand() % 100) / 100.0;
@@ -29,6 +30,7 @@ namespace Algo {
 			t += el.first;
 			if (r <= t) {
 				eaten.push_back(el.second);
+				routeVec.push_back({ (float)node.getX(), (float)node.getY(), (float)nodes[el.second].getX(), (float)nodes[el.second].getY() });
 				return &nodes[el.second];
 			}
 		}
@@ -65,6 +67,7 @@ namespace Algo {
 	};
 
 	void start() {
+		mut.lock();
 		std::vector<std::vector<unsigned>> routes;
 		std::vector<unsigned> vec;
 		int c = 1;
@@ -75,6 +78,9 @@ namespace Algo {
 				vec.push_back(0);
 				while (vec.size() != nodes.size() + 1) {
 					current = findNext(*current, vec);
+					 mut.unlock();
+					std::this_thread::sleep_for(std::chrono::milliseconds(300));
+					mut.lock();
 					if (current == nullptr) throw std::runtime_error("The next node is not defined");
 				}
 				for (auto it = vec.begin(); it != vec.end(); ++it) {		// Весь путь одного муравья
@@ -83,6 +89,7 @@ namespace Algo {
 				std::cout << std::endl;
 				routes.push_back(vec);
 				vec.clear();
+				routeVec.clear();
 			}
 			for (size_t i = 0; i < routes.size(); ++i) {
 				Algo::updatePheromone(routes[i]);
@@ -105,7 +112,7 @@ namespace Algo {
 			routes.clear();
 			std::cout << "///////////////// ITERATION " << c << std::endl;
 			c++;
-			//std::this_thread::sleep_for(std::chrono::seconds(100000000000));
+			
 		}
 	};
 }

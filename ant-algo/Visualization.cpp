@@ -11,32 +11,38 @@ namespace Visual {
 		{
 			std::cout << "Error while loading the font from the file" << std::endl;
 		};
+		sf::Texture* nodeTexture = new sf::Texture();
+		if (!(*nodeTexture).loadFromFile("../sources/Ant.png"))
+		{
+			std::cout << "Error while loading the ant from the file" << std::endl;
+		};
+		sf::Texture* grassTexture = new sf::Texture();
+		if (!(*grassTexture).loadFromFile("../sources/Grass.png"))
+		{
+			std::cout << "Error" << std::endl;
+		}
+		
+		nodeSprite.setScale({ 0.1, 0.1 });
+		nodeSprite.setTexture(*nodeTexture);
+		grassSprite.setTexture(*grassTexture);
+		grassSprite.setPosition((window.getSize().x / 23) * 0.5, (window.getSize().y / 10) * 1.5);
+		grassSprite.setTextureRect(sf::IntRect(0, 0, static_cast<double>((window.getSize().x / 3) * 2), static_cast<double>((window.getSize().y / 10) * 8)));
+		std::cout << nodeSprite.getTexture()->getSize().x << '\t' << nodeSprite.getTexture()->getSize().y << std::endl;
 	}
 	void drawWindow(const core::AppState& state) {
+		//window setup
+		auto desktop = sf::VideoMode::getDesktopMode();
+		window.setPosition(sf::Vector2i(desktop.width / 2 - window.getSize().x / 2, desktop.height / 2 - window.getSize().y / 2));
+
 		if (&state == &core::state_started) {
+			mut.lock();
 			TextBox textbox1(12, sf::Color::Black, true);
 
 			textbox1.setFont(font_1);
 			textbox1.setPosition({ 10,10 });
 
-			//window setup
-			auto desktop = sf::VideoMode::getDesktopMode();
-			window.setPosition(sf::Vector2i(desktop.width / 2 - window.getSize().x / 2, desktop.height / 2 - window.getSize().y / 2));
-
 			//white background
 			window.clear(sf::Color::White);
-
-
-			//grass
-			sf::Texture grass;
-			if (!grass.loadFromFile("../sources/Grass.png"))
-			{
-				std::cout << "Error" << std::endl;
-			}
-			//sf::Sprite sprite_grass(grass, sf::IntRect(0, 0, 100, 100));
-
-			sf::Sprite sprite_grass(grass, sf::IntRect(0, 0, static_cast<double>((window.getSize().x / 3) * 2), static_cast<double>((window.getSize().y / 10) * 8)));
-			sprite_grass.setPosition((window.getSize().x / 23) * 0.5, (window.getSize().y / 10) * 1.5);
 
 			//Button btn1("Click", { 10,10 }, { 100,100 }, sf::Color::White, sf::Color::Black, 2, font_1, 14, sf::Color::Black);
 
@@ -67,7 +73,10 @@ namespace Visual {
 
 			window.display();*/
 
+			bool b = false;
+
 			while (window.isOpen()) {
+				if (b) mut.lock();
 				sf::Event event;					//class Event
 				while (window.pollEvent(event)) {
 					switch (event.type) {			//enum type
@@ -95,23 +104,82 @@ namespace Visual {
 
 				}
 				window.clear(sf::Color::White);
-				window.draw(sprite_grass);
+				window.draw(grassSprite);
+				for (auto& el : core::routeVec) {
+					drawPath({ el[0], el[1] }, { el[2], el[3]});
+				}
+				for (auto& el : core::nodes) {
+					drawNode(el.getX(), el.getY());
+				}
 				//textbox1.drawTo(window);
 				btn1.drawTo(window);
 				window.draw(sprite_ant);
 				window.draw(sprite_btn);
-				for (size_t i = 0; i < core::nodes.size() - 1; ++i) {
-					for (size_t j = i + 1; j < core::nodes.size(); ++j) {
-						drawPath({ (float)core::nodes[i].getX(), (float)core::nodes[i].getY() }, { (float)core::nodes[j].getX(), (float)core::nodes[j].getY() });
-					}
-				}
+				
 				window.display();
+				b = true;
+				mut.unlock();
 			}
 			/*window.clear();
 			textbox1.drawTo(window);
 			window.display();*/
 		};
 		if (&state == &core::state_nodes) {};
+		if (&state == &core::state_execution) {				// нужно перенести отрисовку поля, узлов и т.д в отдельную функцию, чтобы вызывать при каждом стейте
+			mut.lock();
+
+			//white background
+			window.clear(sf::Color::White);
+
+			Button btn1 = Button::builder().setPosition(sf::Vector2f{ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.3)}).setSize({ 100, 40 }).setString("Click").build();
+
+			bool b = false;
+
+			while (window.isOpen()) {
+				if (b) mut.lock();
+				sf::Event event;					//class Event
+				while (window.pollEvent(event)) {
+					switch (event.type) {			//enum type
+					case sf::Event::Closed:
+						window.close();
+						break;
+					case sf::Event::TextEntered:	//enum {TextEntered}
+						break;
+					case sf::Event::MouseButtonPressed:
+						if (btn1.isMouseOver(window)) {
+							btn1.setFill(sf::Color::Yellow);
+						}
+						break;
+					case sf::Event::MouseMoved:
+						if (btn1.isMouseOver(window)) {
+							btn1.setFill(sf::Color::Green);
+						}
+						else {
+							btn1.setFill(sf::Color::White);
+						}
+						break;
+					}
+
+				}
+				window.clear(sf::Color::White);
+				window.draw(grassSprite);
+				for (auto& el : core::routeVec) {
+					drawPath({ el[0], el[1] }, { el[2], el[3] });
+				}
+				for (auto& el : core::nodes) {
+					drawNode(el.getX(), el.getY());
+				}
+				//textbox1.drawTo(window);
+				btn1.drawTo(window);
+
+				window.display();
+				b = true;
+				mut.unlock();
+			}
+			/*window.clear();
+			textbox1.drawTo(window);
+			window.display();*/
+		}
 	};
 
 	// Обновление статистики внутри окна
@@ -121,30 +189,37 @@ namespace Visual {
 
 	// Отрисовка вершин графа (муравейника и пищи)
 	void drawNode(double x, double y) {
+		sf::Vector2u size = nodeSprite.getTexture()->getSize();
 
+		nodeSprite.setPosition((float)x - size.x / 20, (float)y - size.y / 20);		// scale муравья 0.1 <=> texture.size/10
+																					// мы хотим, чтобы картинка располагалась по центру (size / 2) выходит texture.size/10/2
+		window.draw(nodeSprite);
 	};
 
 	// Отрисовка пути A(x1, y1) --> B(x2, y2)
 	void drawPath(sf::Vector2f p1, sf::Vector2f p2) {
 
 		const float len = (float)core::findLength(p1.x, p1.y, p2.x, p2.y);
-		const float thickness = 3.0;
+		const float thickness = 4.0;
 
 		#define TODEGREE(R) R * (180 / M_PI) 
 
-		sf::CircleShape ss1;
+		/*sf::CircleShape ss1;
 		sf::CircleShape ss2;
 		ss1.setFillColor(sf::Color::Red);
-		ss2.setFillColor(sf::Color::Red);
+		ss2.setFillColor(sf::Color::Red);			// Точки для теста
 		ss1.setPosition(p1);
 		ss2.setPosition(p2);
 		ss1.setRadius(2);
 		ss2.setRadius(2);
+		Visual::window.draw(ss1);
+		Visual::window.draw(ss2);
+		*/
 
 		/////////////////////////////////////////////
 
 		sf::RectangleShape rs;
-		rs.setFillColor(sf::Color::Black);
+		rs.setFillColor(sf::Color::Red);
 
 		if (p1.y == p2.y) {
 			if (p2.x < p1.x) {
@@ -187,28 +262,11 @@ namespace Visual {
 		Visual::window.draw(rs);
 
 		/////////////////////////////////////////////
-		Visual::window.draw(ss1);
-		Visual::window.draw(ss2);
 	};
 
 	// Изменение толщины тропы из феромонов A(x1,y1) --> B(x2,y2)
 	void updatePheromones(double x1, double y1, double x2, double y2) {
 
-	};
-
-	// Ожидание события
-	core::AppEvent waitForEvent() {
-		////expecting event from window
-		//while (window.isOpen())
-		//{
-		//	sf::Event event;
-		//	while (window.pollEvent(event))  // 1.  
-		//	{
-		//		if (event.type == sf::Event::Closed)
-		//			window.close();
-		//	}
-		//}
-		return core::AppEvent::LAUNCH;
 	};
 
 	// Стереть граф, очистить статистику
