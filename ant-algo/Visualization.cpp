@@ -8,7 +8,7 @@
 namespace Visual {
 
 	void prepareVisual() {
-		if (!font_1.loadFromFile("../sources/Open_Sans/OpenSans-Light.ttf"))
+		if (!font_1.loadFromFile("../sources/Open_Sans/OpenSans-Bold.ttf"))
 		{
 			std::cout << "Error while loading the font from the file" << std::endl;
 		};
@@ -26,7 +26,7 @@ namespace Visual {
 		nodeSprite.setScale({ 0.1, 0.1 });
 		nodeSprite.setTexture(*nodeTexture);
 		grassSprite.setTexture(*grassTexture);
-		grassSprite.setPosition((window.getSize().x / 23) * 0.5, (window.getSize().y / 10) * 1.5);
+		grassSprite.setPosition((window.getSize().x / 23) * 0.5, (window.getSize().y / 10));
 		grassSprite.setTextureRect(sf::IntRect(0, 0, static_cast<double>((window.getSize().x / 3) * 2), static_cast<double>((window.getSize().y / 10) * 8)));
 	}
 	void drawWindow(const core::AppState& state) {
@@ -131,8 +131,9 @@ namespace Visual {
 			//white background
 			window.clear(sf::Color::White);
 
-			Button btn1 = Button::builder().setPosition(sf::Vector2f{ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.3)}).setSize({ 100, 40 }).setString
-("Click").build();
+			Button btnStop = Button::builder().setString("Stop").setSize({ 180, 50 }).setPosition(sf::Vector2f{ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.3) }).setOutlineColor(sf::Color::Black).setOutlineThickness(1).build();
+
+			Button btnStats = Button::builder().setString("Statistics").setSize({ 180, 50 }).setPosition(sf::Vector2f{ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.5) }).setOutlineColor(sf::Color::Black).setOutlineThickness(1).build();
 
 			Slider slider;
 
@@ -149,30 +150,38 @@ namespace Visual {
 					case sf::Event::TextEntered:	//enum {TextEntered}
 						break;
 					case sf::Event::MouseButtonPressed:
-						std::cout << "PRESSED " << slider.isInTarget() << std::endl;
-						if (btn1.isMouseOver(window)) {
-							btn1.setFill(sf::Color::Yellow);
+						if (btnStop.isMouseOver(window)) {
+							btnStop.setFill(sf::Color::Yellow);
+						}
+						if (btnStats.isMouseOver(window)) {
+							btnStats.setFill(sf::Color::Yellow);
 						}
 						if (slider.isMouseOver(window) && !slider.isInTarget()) {
 							slider.setInTarget(true);
-							slider.setPos(sf::Mouse::getPosition().x);
+							slider.setPos(sf::Mouse::getPosition(window).x - slider.getHandSize().x / 2);
 						}
 						break;
 					case sf::Event::MouseMoved:
-						std::cout << "MOVED " << slider.isInTarget() << std::endl;
-						if (btn1.isMouseOver(window)) {
-							btn1.setFill(sf::Color::Green);
+						if (btnStop.isMouseOver(window)) {
+							btnStop.setFill(sf::Color::Green);
 						}
 						else {
-							btn1.setFill(sf::Color::White);
+							btnStop.setFill(sf::Color::White);
+						}
+						if (btnStats.isMouseOver(window)) {
+							btnStats.setFill(sf::Color::Green);
+						}
+						else {
+							btnStats.setFill(sf::Color::White);
+						}
+						if (btnStop.isMouseOver(window)) {
+							btnStop.setFill(sf::Color::Green);
 						}
 						if (slider.isInTarget()) {
-							std::cout << "SLIDER POS " << sf::Mouse::getPosition().x << std::endl;
-							slider.setPos(sf::Mouse::getPosition().x);
+							slider.setPos(sf::Mouse::getPosition(window).x - slider.getHandSize().x / 2);
 						}
 						break;
 					case sf::Event::MouseButtonReleased:
-						std::cout << "RELEASED " << slider.isInTarget() << std::endl;
 						if (slider.isInTarget()) {
 							slider.setInTarget(false);
 						}
@@ -188,10 +197,6 @@ namespace Visual {
 						try {
 							drawPath({ core::routeVec.at(i).at(0), core::routeVec.at(i).at(1) }, { core::routeVec.at(i).at(2), core::routeVec.at(i).at(3) });
 						}
-						//catch (std::exception& ex) {
-							//std::cout << "************************************************************" << std::endl;
-							//fprintf(file, "%s", ex.what());
-						//}
 						catch (...) {
 							break;
 						}
@@ -200,7 +205,9 @@ namespace Visual {
 						drawNode(el.getX(), el.getY());
 					}
 					//textbox1.drawTo(window);
-					btn1.drawTo(window);
+					btnStop.drawTo(window);
+					btnStats.drawTo(window);
+
 					window.display();
 					b = true;
 				}

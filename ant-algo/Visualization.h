@@ -35,10 +35,10 @@ namespace Visual {
 		Slider() : inTarget(false) {
 			handSize.x = 5.0;
 			handSize.y = 20.0;
-			lineSize.x = 100.0;
+			lineSize.x = 200.0;
 			lineSize.y = 3.0;
-			linePos.x = window.getSize().x * 0.8;
-			linePos.y = window.getSize().y * 0.5;
+			linePos.x = window.getSize().x * 0.3;
+			linePos.y = window.getSize().y * 0.95;
 			handPos.x = (float)(linePos.x + lineSize.x / 2 - handSize.x / 2);
 			handPos.y = (float)(linePos.y) - handSize.y / 2;
 
@@ -50,12 +50,11 @@ namespace Visual {
 			handShape.setPosition(handPos);
 		}
 		void setPos(float x) {
-			if (handPos.x != x) {
 				handPos.x = x;
-				if (x < linePos.x) handPos.x = linePos.x;
-				if (x > linePos.x + lineSize.x) handPos.x = linePos.x + lineSize.x;
-				handShape.setPosition(handPos.x, handPos.y);
-			}
+				if (x <= linePos.x) handPos.x = linePos.x;
+				if (x >= linePos.x + lineSize.x) handPos.x = linePos.x + lineSize.x;
+				handShape.setPosition(handPos.x, handPos.y);	
+				algoSpeed = 0.75*(linePos.x + lineSize.x - handPos.x)/2 + 0.75 * (linePos.x + lineSize.x - handPos.x) * 0.1;
 		}
 		void draw(sf::RenderWindow& wind) {
 			wind.draw(lineShape);
@@ -80,6 +79,9 @@ namespace Visual {
 			int y = sf::Mouse::getPosition(window).y;
 			return isSliderOver(x, y);
 		}
+		sf::Vector2f getHandSize() {
+			return handSize;
+		}
 	};
 
 	class Button {
@@ -97,7 +99,13 @@ namespace Visual {
 		//	text.setCharacterSize(textSize);
 		//	text.setFillColor(textColor);
 		//}
-		Button(sf::RectangleShape button, sf::Text text) : button(button), text(text) {};
+		Button(sf::RectangleShape button, sf::Text text) {
+			this->button = button;
+			this->text = text;
+			this->text.setCharacterSize(30);
+			this->text.setFillColor(sf::Color::Black);
+			this->text.setFont(font_1);
+		};
 		void setFill(sf::Color fill) {
 			button.setFillColor(fill);
 		}
@@ -111,9 +119,8 @@ namespace Visual {
 
 			//What is longer?
 			//text.setPosition(pos.x + button.getGlobalBounds().width/2 - text.getGlobalBounds().width, pos.y + button.getGlobalBounds().height/2 - text.getGlobalBounds().height/2);
-			float xPos = pos.x + button.getGlobalBounds().width / 2 - text.getGlobalBounds().width / 2;
-			float yPos = pos.y + button.getGlobalBounds().height / 2 - text.getGlobalBounds().height / 2;
-			text.setPosition(xPos, yPos);
+			//float xPos = pos.x + button.getGlobalBounds().width / 2 - text.getGlobalBounds().width / 2;
+			//float yPos = pos.y + button.getGlobalBounds().height / 2 - text.getGlobalBounds().height / 2;
 		}
 
 		bool isMouseOver(sf::RenderWindow& window) {
@@ -133,9 +140,6 @@ namespace Visual {
 		}
 		void drawTo(sf::RenderWindow& window) {
 			window.draw(button);
-			text.setCharacterSize(30);
-			text.setFillColor(sf::Color::Black);
-			text.setFont(font_1);
 			window.draw(text);
 		}
 
@@ -148,8 +152,8 @@ namespace Visual {
 	public:
 		builder& setPosition(sf::Vector2f pos) {
 			button.setPosition(pos);
-			float xPos = pos.x + button.getGlobalBounds().width / 2 - text.getGlobalBounds().width / 2;
-			float yPos = pos.y + button.getGlobalBounds().height / 2 - text.getGlobalBounds().height / 2;
+			float xPos = pos.x + button.getSize().x / 2 - text.getGlobalBounds().width / 2;
+			float yPos = pos.y + button.getSize().y / 2 - text.getGlobalBounds().height / 1.5;
 			text.setPosition(xPos, yPos); 
 			return *this; 
 		};
@@ -163,7 +167,7 @@ namespace Visual {
 		//	text.setCharacterSize(textSize);
 		//	text.setFillColor(textColor);
 		//}
-		builder& setString(std::string string) { text.setString(string); return *this; };
+		builder& setString(std::string string) { text.setCharacterSize(30); text.setFont(font_1); text.setString(string); return *this; };
 		builder& setFont(sf::Font font) { text.setFont(font); return *this; };
 		//builder& text.setCharacterSize(textSize);
 		//	text.setFillColor(textColor);

@@ -77,7 +77,7 @@ namespace Algo {
 				vec.push_back(0);
 				while (vec.size() != nodes.size() + 1) {
 					current = findNext(*current, vec);
-					std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					std::this_thread::sleep_for(std::chrono::milliseconds(algoSpeed));
 					if (current == nullptr) throw std::runtime_error("The next node is not defined");
 				}
 				for (auto it = vec.begin(); it != vec.end(); ++it) {		// Весь путь одного муравья

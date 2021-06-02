@@ -16,6 +16,8 @@ constexpr double M_PI = 3.14159265358979323846;
 
 inline std::mutex mut;
 
+inline int algoSpeed = 95;
+
 namespace core {
 	template <class T, class R, class K>
 	bool mapContainsKey(std::map<T, R>& map, K key) {
