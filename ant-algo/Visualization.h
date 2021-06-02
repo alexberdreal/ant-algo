@@ -23,6 +23,65 @@ namespace Visual {
 	inline sf::Sprite nodeSprite;
 	inline sf::Sprite grassSprite;
 
+	class Slider {
+		sf::Vector2f handSize;
+		sf::Vector2f lineSize;
+		sf::Vector2f handPos;
+		sf::Vector2f linePos;
+		sf::RectangleShape handShape;
+		sf::RectangleShape lineShape;
+		bool inTarget;
+	public:
+		Slider() : inTarget(false) {
+			handSize.x = 5.0;
+			handSize.y = 20.0;
+			lineSize.x = 100.0;
+			lineSize.y = 3.0;
+			linePos.x = window.getSize().x * 0.8;
+			linePos.y = window.getSize().y * 0.5;
+			handPos.x = (float)(linePos.x + lineSize.x / 2 - handSize.x / 2);
+			handPos.y = (float)(linePos.y) - handSize.y / 2;
+
+			handShape.setFillColor(sf::Color::Blue);
+			handShape.setSize(handSize);
+			lineShape.setFillColor(sf::Color::Black);
+			lineShape.setSize(lineSize);
+			lineShape.setPosition(linePos);
+			handShape.setPosition(handPos);
+		}
+		void setPos(float x) {
+			if (handPos.x != x) {
+				handPos.x = x;
+				if (x < linePos.x) handPos.x = linePos.x;
+				if (x > linePos.x + lineSize.x) handPos.x = linePos.x + lineSize.x;
+				handShape.setPosition(handPos.x, handPos.y);
+			}
+		}
+		void draw(sf::RenderWindow& wind) {
+			wind.draw(lineShape);
+			wind.draw(handShape);
+		}
+		bool isSliderOver(float x, float y) {
+			if (inTarget) {
+				return (x <= linePos.x + lineSize.x) && (x >= linePos.x);
+			}
+			else {
+				return (y <= handPos.y + handSize.y) && (y >= handPos.y) && (x <= linePos.x + lineSize.x) && (x >= linePos.x);
+			}
+		}
+		void setInTarget(bool is) {
+			inTarget = is;
+		}
+		bool isInTarget() {
+			return inTarget;
+		}
+		bool isMouseOver(sf::RenderWindow& win) {
+			int x = sf::Mouse::getPosition(window).x;
+			int y = sf::Mouse::getPosition(window).y;
+			return isSliderOver(x, y);
+		}
+	};
+
 	class Button {
 	public:
 		class builder;
@@ -234,5 +293,7 @@ namespace Visual {
 	// Стереть граф, очистить статистику
 	void clean();
 }
+
+
 
 #endif

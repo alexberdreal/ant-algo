@@ -54,6 +54,7 @@ int main(int argc, char* argv[]) {
 
 	Visual::drawWindow(core::state_execution);
 
+	th.detach();
 	//fromStartToStop();
 
 }

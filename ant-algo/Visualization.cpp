@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "Visualization.h"
 #include "Core.h"
 #include <iostream>
@@ -27,7 +28,6 @@ namespace Visual {
 		grassSprite.setTexture(*grassTexture);
 		grassSprite.setPosition((window.getSize().x / 23) * 0.5, (window.getSize().y / 10) * 1.5);
 		grassSprite.setTextureRect(sf::IntRect(0, 0, static_cast<double>((window.getSize().x / 3) * 2), static_cast<double>((window.getSize().y / 10) * 8)));
-		std::cout << nodeSprite.getTexture()->getSize().x << '\t' << nodeSprite.getTexture()->getSize().y << std::endl;
 	}
 	void drawWindow(const core::AppState& state) {
 		//window setup
@@ -126,12 +126,15 @@ namespace Visual {
 		};
 		if (&state == &core::state_nodes) {};
 		if (&state == &core::state_execution) {				// нужно перенести отрисовку поля, узлов и т.д в отдельную функцию, чтобы вызывать при каждом стейте
-			mut.lock();
+			FILE* file = fopen("test.txt", "wt");
 
 			//white background
 			window.clear(sf::Color::White);
 
-			Button btn1 = Button::builder().setPosition(sf::Vector2f{ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.3)}).setSize({ 100, 40 }).setString("Click").build();
+			Button btn1 = Button::builder().setPosition(sf::Vector2f{ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.3)}).setSize({ 100, 40 }).setString
+("Click").build();
+
+			Slider slider;
 
 			bool b = false;
 
@@ -141,45 +144,71 @@ namespace Visual {
 					switch (event.type) {			//enum type
 					case sf::Event::Closed:
 						window.close();
-						break;
+						fclose(file);
+						return;
 					case sf::Event::TextEntered:	//enum {TextEntered}
 						break;
 					case sf::Event::MouseButtonPressed:
+						std::cout << "PRESSED " << slider.isInTarget() << std::endl;
 						if (btn1.isMouseOver(window)) {
 							btn1.setFill(sf::Color::Yellow);
 						}
+						if (slider.isMouseOver(window) && !slider.isInTarget()) {
+							slider.setInTarget(true);
+							slider.setPos(sf::Mouse::getPosition().x);
+						}
 						break;
 					case sf::Event::MouseMoved:
+						std::cout << "MOVED " << slider.isInTarget() << std::endl;
 						if (btn1.isMouseOver(window)) {
 							btn1.setFill(sf::Color::Green);
 						}
 						else {
 							btn1.setFill(sf::Color::White);
 						}
+						if (slider.isInTarget()) {
+							std::cout << "SLIDER POS " << sf::Mouse::getPosition().x << std::endl;
+							slider.setPos(sf::Mouse::getPosition().x);
+						}
 						break;
+					case sf::Event::MouseButtonReleased:
+						std::cout << "RELEASED " << slider.isInTarget() << std::endl;
+						if (slider.isInTarget()) {
+							slider.setInTarget(false);
+						}
+						break;
+					default: break;
 					}
-
 				}
-				window.clear(sf::Color::White);
-				window.draw(grassSprite);
-				for (size_t i = 0; i < core::routeVec.size(); ++i) {
-					try { drawPath({ core::routeVec.at(i).at(0), core::routeVec.at(i).at(1) }, { core::routeVec.at(i).at(2), core::routeVec.at(i).at(3) }); }
-					catch (...) { std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl; break; }
+					window.clear(sf::Color::White);
+					window.draw(grassSprite);
+					slider.draw(window);
+					for (size_t i = 0; i < core::routeVec.size(); ++i) {
+						
+						try {
+							drawPath({ core::routeVec.at(i).at(0), core::routeVec.at(i).at(1) }, { core::routeVec.at(i).at(2), core::routeVec.at(i).at(3) });
+						}
+						//catch (std::exception& ex) {
+							//std::cout << "************************************************************" << std::endl;
+							//fprintf(file, "%s", ex.what());
+						//}
+						catch (...) {
+							break;
+						}
+					}
+					for (auto& el : core::nodes) {
+						drawNode(el.getX(), el.getY());
+					}
+					//textbox1.drawTo(window);
+					btn1.drawTo(window);
+					window.display();
+					b = true;
 				}
-				for (auto& el : core::nodes) {
-					drawNode(el.getX(), el.getY());
-				}
-				//textbox1.drawTo(window);
-				btn1.drawTo(window);
-
-				window.display();
-				b = true;
+				/*window.clear();
+				textbox1.drawTo(window);
+				window.display();*/
 			}
-			/*window.clear();
-			textbox1.drawTo(window);
-			window.display();*/
-		}
-	};
+		};
 
 	// Обновление статистики внутри окна
 	void updateStatistics() {
