@@ -7,6 +7,8 @@ using namespace core;
 
 namespace Algo {
 
+	inline std::atomic_bool toTerminate = false;
+
 	// —читает веро€тность перехода from ---> to
 	core::Node* findNext(const Node& node, std::vector<unsigned>& eaten) noexcept;
 

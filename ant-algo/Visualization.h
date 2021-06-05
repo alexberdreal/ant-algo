@@ -18,6 +18,8 @@ static double tempX, tempY;
 
 namespace Visual {
 
+	inline bool showCmd = true;
+
 	inline sf::Font font_1;
 	inline sf::RenderWindow window(sf::VideoMode(1400, 768), "SFML works!");
 	inline sf::Sprite nodeSprite;
@@ -54,7 +56,7 @@ namespace Visual {
 				if (x <= linePos.x) handPos.x = linePos.x;
 				if (x >= linePos.x + lineSize.x) handPos.x = linePos.x + lineSize.x;
 				handShape.setPosition(handPos.x, handPos.y);	
-				algoSpeed = 0.75*(linePos.x + lineSize.x - handPos.x)/2 + 0.75 * (linePos.x + lineSize.x - handPos.x) * 0.1;
+				algoSpeed.store(0.75*(linePos.x + lineSize.x - handPos.x)/2 + 0.75 * (linePos.x + lineSize.x - handPos.x) * 0.1);
 		}
 		void draw(sf::RenderWindow& wind) {
 			wind.draw(lineShape);
@@ -273,6 +275,15 @@ namespace Visual {
 		}
 	};
 
+	class BestPath {
+	public:
+		void updateData(std::vector<unsigned>& path, long len) {
+		}
+	private:
+		static sf::Text txt1;
+		static sf::Text txt2;
+	};
+
 	//Загрузка шрифтов и текстур
 	void prepareVisual();
 
@@ -293,6 +304,14 @@ namespace Visual {
 
 	// Ожидание события
 	core::AppEvent waitForEvent();
+
+	void cmdStateChanged();
+
+	bool isOverGrass(sf::Vector2f vec);
+
+	// При клике по траве в state_nodes вычисляет координаты муравья, в случае если клик произошел
+	// настолько близко к границе области травы, что картинка узла не вмещается в область травы
+	sf::Vector2f getRightCoordinates(sf::Vector2f clickPos);
 
 	// Стереть граф, очистить статистику
 	void clean();

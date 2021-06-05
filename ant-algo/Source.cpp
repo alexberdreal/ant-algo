@@ -2,14 +2,18 @@
 #include "Algorithm.h"
 #include "Visualization.h"
 #include <thread> 
-
-void fromStartToStop();
+#include <Windows.h>
 
 void initNodes();
 
 int main(int argc, char* argv[]) {
-	Visual::prepareVisual();
-	if (argc > 1)
+	HWND cmd = GetConsoleWindow();						// получаем дескриптор консоли
+	SetWindowPos(cmd, NULL, 0, 0, 300, 500, NULL);		// указываем положение и размеры консоли
+	Visual::cmdStateChanged();							// скрываем консоль
+	
+	Visual::prepareVisual();							// инициализируем графические объекты
+
+	if (argc > 1)										// тесты
 	for (int i = 1; i < argc; i += 2) {
 		if (!strcmp(argv[i], "-t")) {
 			FILE* file = fopen(argv[i + 1], "r");
@@ -34,14 +38,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	srand(time(NULL));
-	
-	 initNodes();                                      // инициализируем узлы 
-
-	 for (size_t i = 0; i < nodes.size(); ++i) {
-		nodes[i].initPaths();							// прокладываем пути между каждым узлом
-	 }
-	
-	 numberOfAnts = 6;								// указываем количество муравьев
 
 
 	// Visual::drawWindow(core::state_started);
@@ -49,84 +45,34 @@ int main(int argc, char* argv[]) {
 	// Visual::drawWindow(core::state_nodes);
 	// Visual::drawWindow(core::state_ants);
 
-	 std::thread th(Algo::start);									 //запускаем алгоритм
-	 std::this_thread::sleep_for(std::chrono::seconds(1));
 
-	Visual::drawWindow(core::state_execution);
+	while (true) {
 
-	th.detach();
-	//fromStartToStop();
+		numberOfAnts = 6;									// указываем количество муравьев
+
+		initNodes();										// инициализируем узлы 
+
+		Visual::drawWindow(state_started);
+
+		for (size_t i = 0; i < nodes.size(); ++i) {
+			nodes[i].initPaths();							// прокладываем пути между каждым узлом
+		}
+		//Visual::drawWindow(state_nodes);
+		//Visual::drawWindow(state_ants);
+
+		std::thread th(Algo::start);									 //запускаем алгоритм
+		Visual::drawWindow(state_execution);
+		if (Visual::showCmd) Visual::cmdStateChanged();
+		Algo::toTerminate.store(true);
+		algoSpeed = 0;
+		if (th.joinable()) th.join();
+		Algo::toTerminate.store(false);
+		system("CLS");
+		Algo::reset();
+	}
 
 }
 
 void initNodes() {
 	nodes.push_back(Node());
-	nodes.push_back(Node(240, 200, 1));
-	nodes.push_back(Node(300, 630, 2));
-	nodes.push_back(Node(600, 290, 3));
-	nodes.push_back(Node(930, 350, 4));
-	nodes.push_back(Node(654, 400, 5));
-	nodes.push_back(Node(249, 510, 6));
-	nodes.push_back(Node(790, 270, 7));
-}
-
-
-
-void fromStartToStop() {
-	AppEvent ev = AppEvent::CHOOSEANTS;
-
-	while (true) {
-
-	//	ev = Visual::waitForEvent();
-
-		if (ev == AppEvent::FEED) break;						// Нажатие на "Покормить муравья"
-
-		if (ev == AppEvent::EXIT) exit(EXIT_SUCCESS);			// Выход из программы
-
-	}
-
-	//Visual::drawWindow(core::state_nodes);
-
-	while (true) {
-
-		//ev = Visual::waitForEvent();
-
-		if (ev == AppEvent::DRAWNODE) {							// Нажатие на поле 
-			// логика добавления новых узлов
-		}
-
-		if (ev == AppEvent::CHOOSEANTS) break;					// Нажатие на "Продолжить"
-
-		if (ev == AppEvent::EXIT) exit(EXIT_SUCCESS);			// Выход из программы
-
-	}
-
-	//Visual::drawWindow(core::state_ants);
-
-	while (true) {
-
-		//ev = Visual::waitForEvent();
-
-		if (ev == AppEvent::EXIT) exit(EXIT_SUCCESS);			// Выход из программы
-
-		if (ev == AppEvent::LAUNCH) {							// Запуск алгоритма В ОТДЕЛЬНОМ потоке.
-			//Visual::drawWindow(state_execution);
-			// запуск алгоритма в отдельном потоке
-			break;
-		}
-	}
-
-	while (true) {
-		//ev = Visual::waitForEvent();
-
-		if (ev == AppEvent::RESTART) {							// Рестарт программы (не забыть освободить поток!)
-			Algo::reset();
-		//	Visual::drawWindow(state_nodes);
-			break;
-		}
-
-		if (ev == AppEvent::EXIT) exit(EXIT_SUCCESS);			// Выход из программы
-	}
-
-	fromStartToStop();											// Выполнить заново (после AppEvent::RESTART)
 }

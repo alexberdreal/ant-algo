@@ -63,7 +63,10 @@ namespace Algo {
 	};
 
 	void reset() {
-		
+		numberOfAnts = 0;
+		nodes.clear();
+		routeVec.clear();
+		algoSpeed.store(95);
 	};
 
 	void start() {
@@ -71,13 +74,14 @@ namespace Algo {
 		std::vector<unsigned> vec;
 		int c = 1;
 		while (true) {
-			Node* current;
+			if (toTerminate.load()) return;
+				Node* current;
 			for (int i = 0; i < numberOfAnts; ++i) {
 				current = &nodes[0];
 				vec.push_back(0);
 				while (vec.size() != nodes.size() + 1) {
 					current = findNext(*current, vec);
-					std::this_thread::sleep_for(std::chrono::milliseconds(algoSpeed));
+					std::this_thread::sleep_for(std::chrono::milliseconds(algoSpeed.load()));
 					if (current == nullptr) throw std::runtime_error("The next node is not defined");
 				}
 				for (auto it = vec.begin(); it != vec.end(); ++it) {		// Весь путь одного муравья
@@ -103,6 +107,7 @@ namespace Algo {
 					minR = i;
 				}
 			}
+			
 			std::cout << "MINR " << minR;
 			Algo::updatePheromone(routes[minR], true);
 
