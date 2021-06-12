@@ -81,21 +81,12 @@ namespace core {
 
 	inline BestPath bestPath;
 
-	struct AppState {
-		bool toDrawField;
-		bool isFieldTouchable;
-		bool hasFeedBtn;
-		std::string infoText;
-		bool hasExecutionBtn;
-		bool hasStopBtn;
-		bool hasContinueBtn;
-		bool hasTextField;
+	enum class AppState {
+		state_started,
+		state_nodes,
+		state_ants,
+		state_execution
 	};
-
-	inline const AppState state_started{ true, false, true, "Окно для информации", false, false, false, false };
-	inline AppState state_nodes{ false, true, false, "Расположите еду для муравьёв", false, false, true, false };
-	inline AppState state_ants{ false, false, false, "Введите количество муравьев", false, false, true, true };
-	inline AppState state_execution{ false, false, false, "", true, true, false, false };
 
 	// Муравей, который знает только о своей текущей позиции, пройденный путь и умеет обновлять текущую позицию
 	class Ant {

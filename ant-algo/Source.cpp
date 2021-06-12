@@ -4,17 +4,17 @@
 #include <thread> 
 #include <Windows.h>
 
-void initNodes();
+void colonyNode();														// инициализация колонии
 
 int main(int argc, char* argv[]) {
 	setlocale(LC_ALL, "Rus");
-	HWND cmd = GetConsoleWindow();						// получаем дескриптор консоли
-	SetWindowPos(cmd, NULL, 0, 0, 300, 500, NULL);		// указываем положение и размеры консоли
-	Visual::cmdStateChanged();							// скрываем консоль
+	HWND cmd = GetConsoleWindow();										// получаем дескриптор консоли
+	SetWindowPos(cmd, NULL, 0, 0, 300, 500, NULL);						// указываем положение и размеры консоли
+	Visual::cmdStateChanged();											// скрываем консоль
 	
-	Visual::prepareVisual();							// инициализируем графические объекты
+	Visual::prepareVisual();											// инициализируем графические объекты
 
-	if (argc > 1)										// тесты
+	if (argc > 1)														// тесты
 	for (int i = 1; i < argc; i += 2) {
 		if (!strcmp(argv[i], "-t")) {
 			FILE* file = fopen(argv[i + 1], "r");
@@ -40,43 +40,35 @@ int main(int argc, char* argv[]) {
 
 	srand(time(NULL));
 
-
-	// Visual::drawWindow(core::state_started);
-
-	// Visual::drawWindow(core::state_nodes);
-	// Visual::drawWindow(core::state_ants);
-
-
 	while (true) {
 
-	//	numberOfAnts = 6;									// указываем количество муравьев
+		colonyNode();													// инициализируем колонию 
 
-		initNodes();										// инициализируем узлы 
+		Visual::drawWindow(core::AppState::state_started);				// 1 состояние - запуск приложения
 
-		Visual::drawWindow(state_started);
+		Visual::drawWindow(core::AppState::state_nodes);				// 2 состояние - выбор положения пищи
 
-		Visual::drawWindow(state_nodes);
-
-		Visual::drawWindow(state_ants);
-
+		Visual::drawWindow(core::AppState::state_ants);					// 3 состояние - выбор кол-ва муравьев
 		for (size_t i = 0; i < nodes.size(); ++i) {
-			nodes[i].initPaths();							// прокладываем пути между каждым узлом
+			nodes[i].initPaths();										// прокладываем пути между каждым узлом
 		}
-		//Visual::drawWindow(state_ants);
 
-		std::thread th(Algo::start);									 //запускаем алгоритм
-		Visual::drawWindow(state_execution);
-		if (Visual::showCmd) Visual::cmdStateChanged();
-		Algo::toTerminate.store(true);
-		algoSpeed = 0;
-		if (th.joinable()) th.join();
-		Algo::toTerminate.store(false);
-		system("CLS");
-		Algo::reset();
+		std::thread th(Algo::start);									// запускаем алгоритм
+		Visual::drawWindow(core::AppState::state_execution);			// 4 состояние - отрисовка алгоритма	
+		
+		//  ---------------- Нажата кнопка СТОП -----------------
+		
+		if (Visual::showCmd) Visual::cmdStateChanged();					// Логи спрятать			
+		Algo::toTerminate.store(true);									// Дать сигнал алгоритму, что пора заверишаться
+		algoSpeed = 0;													// Помочь ему в этом, убрав задержку
+		if (th.joinable()) th.join();									// Ждем пока завершится
+		Algo::toTerminate.store(false);									// Перестаем сигнализировать о завершении
+		system("CLS");													// Очистить логи			
+		Algo::reset();													// Обнулить данные программы
 	}
 
 }
 
-void initNodes() {
+void colonyNode() {
 	nodes.push_back(Node());
 }

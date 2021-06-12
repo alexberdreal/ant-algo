@@ -67,7 +67,7 @@ namespace Visual {
 		auto desktop = sf::VideoMode::getDesktopMode();
 		window.setPosition(sf::Vector2i(desktop.width / 2 - window.getSize().x / 2, desktop.height / 2 - window.getSize().y / 2));
 
-		if (&state == &core::state_started) {
+		if (state == core::AppState::state_started) {
 			//white background
 			//Button btn1("Click", { 10,10 }, { 100,100 }, sf::Color::White, sf::Color::Black, 2, font_1, 14, sf::Color::Black);
 
@@ -128,7 +128,7 @@ namespace Visual {
 			textbox1.drawTo(window);
 			window.display();*/
 		};
-		if (&state == &core::state_nodes) {
+		if (state == core::AppState::state_nodes) {
 			Button btn1 = Button::builder().setString(L"Далее").setOutlineThickness(2).setOutlineColor(sf::Color::Black).setSize({ 180, 50 }).setPosition({ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.5) }).build();
 			while (window.isOpen()) {
 				window.clear(sf::Color::White);
@@ -172,7 +172,7 @@ namespace Visual {
 				window.display();
 			}
 		};
-		if (&state == &core::state_ants) {
+		if (state == core::AppState::state_ants) {
 			sf::Text text;
 			text.setFillColor(sf::Color::Black);
 			text.setCharacterSize(25);
@@ -225,7 +225,7 @@ namespace Visual {
 				window.display();
 				}
 		}
-		if (&state == &core::state_execution) {				// нужно перенести отрисовку поля, узлов и т.д в отдельную функцию, чтобы вызывать при каждом стейте
+		if (state == core::AppState::state_execution) {				// нужно перенести отрисовку поля, узлов и т.д в отдельную функцию, чтобы вызывать при каждом стейте
 
 			sf::Text bestPathText;
 			bestPathText.setFont(font_1);
