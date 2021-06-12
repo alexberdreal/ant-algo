@@ -7,6 +7,7 @@
 void initNodes();
 
 int main(int argc, char* argv[]) {
+	setlocale(LC_ALL, "Rus");
 	HWND cmd = GetConsoleWindow();						// получаем дескриптор консоли
 	SetWindowPos(cmd, NULL, 0, 0, 300, 500, NULL);		// указываем положение и размеры консоли
 	Visual::cmdStateChanged();							// скрываем консоль

@@ -22,7 +22,7 @@ namespace Visual {
 
 	inline sf::Font font_1;
 	inline sf::RenderWindow window(sf::VideoMode(1400, 768), "SFML works!");
-	inline sf::Sprite nodeSprite;
+	inline std::vector<sf::Sprite> nodeSprite;
 	inline sf::Sprite grassSprite;
 
 	class Slider {
@@ -169,7 +169,7 @@ namespace Visual {
 		//	text.setCharacterSize(textSize);
 		//	text.setFillColor(textColor);
 		//}
-		builder& setString(std::string string) { text.setCharacterSize(30); text.setFont(font_1); text.setString(string); return *this; };
+		builder& setString(std::wstring string) { text.setCharacterSize(30); text.setFont(font_1); text.setString(string); return *this; };
 		builder& setFont(sf::Font font) { text.setFont(font); return *this; };
 		//builder& text.setCharacterSize(textSize);
 		//	text.setFillColor(textColor);
@@ -187,11 +187,12 @@ namespace Visual {
 	public:
 		//textBox() {};
 		TextBox(int size, sf::Color color, bool sel) {
-			this->setLimit(true, 4);
+			this->setLimit(true, 1);
 			textbox.setCharacterSize(size);
 			textbox.setFillColor(color);
-			rect.setSize({ 100.f, size+20.f });
+			rect.setSize({ 30.f, size+12.f });
 			rect.setOutlineColor(sf::Color::Black);
+			rect.setOutlineThickness(3);
 			rect.setFillColor(sf::Color::White);
 			isSelected = sel;
 			if (sel) {
@@ -204,7 +205,7 @@ namespace Visual {
 		}
 		void setPosition(sf::Vector2f pos) {
 			rect.setPosition(pos);
-			textbox.setPosition(pos.x + 5, pos.y + 10);
+			textbox.setPosition(pos.x + 5, pos.y + 8);
 		}
 		void setLimit(bool hasLimit) {
 			this->hasLimit = hasLimit;
@@ -234,12 +235,12 @@ namespace Visual {
 		void typedOn(sf::Event input) {
 			if (isSelected) {
 				int charTyped = input.text.unicode;
-				if (charTyped < 143859) {
+				if ((charTyped < 0x3A && charTyped > 0x30) || charTyped == DELETE_KEY) {
 					if (hasLimit) {
-						if (text.str().length() <= limit) {			//why <=
+						if (text.str().length() < limit) {			//why <=
 							inputLogic(charTyped);
 						}
-						else if (text.str().length() > limit && (charTyped == DELETE_KEY)) {
+						else if (text.str().length() >= limit && (charTyped == DELETE_KEY)) {
 							deleteLastChar();
 						}
 					}
@@ -274,7 +275,8 @@ namespace Visual {
 			else if (charTyped == DELETE_KEY && text.str().length() > 0) {
 				deleteLastChar();
 			}
-			textbox.setString(text.str() + L"_");
+			if (text.str().length() == 0) { textbox.setString(text.str() + L"_"); }
+			else { textbox.setString(text.str()); }
 		}
 		void deleteLastChar() {
 			std::wstring s = text.str();
@@ -301,7 +303,7 @@ namespace Visual {
 	void updateStatistics();
 
 	// Отрисовка вершин графа (муравейника и пищи)
-	void drawNode(double x, double y);
+	void drawNode(const core::Node* node);
 
 	// Отрисовка пути p1 --> p2
 	void drawPath(sf::Vector2f p1, sf::Vector2f p2);

@@ -48,7 +48,7 @@ namespace Algo {
 				sum += nodes[route[i]].paths[route[i + 1]].length;
 				nodes[route[i]].paths[route[i + 1]].pheromone *= 0.6;
 			}
-			std::cout << "sum: " << sum << std::endl;
+			std::cout << "Сумма: " << sum << std::endl;
 			for (size_t i = 0; i < route.size() - 1; ++i) {
 				nodes[route[i]].paths[route[i + 1]].pheromone += 40 / sum;
 				//std::cout << "After: " << nodes[route[i]].paths[route[i + 1]].pheromone << std::endl;
@@ -111,16 +111,16 @@ namespace Algo {
 			}
 
 			core::bestPath.mut.lock();
-			core::bestPath.route = routes[minR];
-			std::cout << "BEST " << minL << std::endl;
-			if (core::bestPath.len > minL) core::bestPath.len = minL;
+			std::cout << "Лучшая длина: " << minL << std::endl;
+			if (core::bestPath.len > minL) {
+				core::bestPath.len = minL;
+				core::bestPath.route = routes[minR];
+			}
 			core::bestPath.mut.unlock();
-			
-			std::cout << "MINR " << minR;
 			Algo::updatePheromone(routes[minR], true);
 
 			routes.clear();
-			std::cout << "///////////////// ITERATION " << c << std::endl;
+			std::cout << "////// Итерация " << c << std::endl;
 			c++;
 			
 		}
