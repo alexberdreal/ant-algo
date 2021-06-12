@@ -4,6 +4,7 @@
 #include <map>
 #include <random>
 #include <cmath>
+#include <mutex>
 #include <time.h>
 #include <string>
 #include <iostream>
@@ -71,6 +72,14 @@ namespace core {
 	{
 		RESTART, LAUNCH, EXIT, DRAWNODE, FEED, CHOOSEANTS
 	};
+
+	struct BestPath {
+		std::mutex mut;
+		std::vector<unsigned> route;
+		double len = 100000.0;
+	};
+
+	inline BestPath bestPath;
 
 	struct AppState {
 		bool toDrawField;

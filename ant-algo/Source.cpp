@@ -48,16 +48,19 @@ int main(int argc, char* argv[]) {
 
 	while (true) {
 
-		numberOfAnts = 6;									// указываем количество муравьев
+	//	numberOfAnts = 6;									// указываем количество муравьев
 
 		initNodes();										// инициализируем узлы 
 
 		Visual::drawWindow(state_started);
 
+		Visual::drawWindow(state_nodes);
+
+		Visual::drawWindow(state_ants);
+
 		for (size_t i = 0; i < nodes.size(); ++i) {
 			nodes[i].initPaths();							// прокладываем пути между каждым узлом
 		}
-		//Visual::drawWindow(state_nodes);
 		//Visual::drawWindow(state_ants);
 
 		std::thread th(Algo::start);									 //запускаем алгоритм

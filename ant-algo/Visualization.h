@@ -187,19 +187,24 @@ namespace Visual {
 	public:
 		//textBox() {};
 		TextBox(int size, sf::Color color, bool sel) {
+			this->setLimit(true, 4);
 			textbox.setCharacterSize(size);
 			textbox.setFillColor(color);
+			rect.setSize({ 100.f, size+20.f });
+			rect.setOutlineColor(sf::Color::Black);
+			rect.setFillColor(sf::Color::White);
 			isSelected = sel;
 			if (sel) {
 				textbox.setString("_");
 			}
 			else textbox.setString("");
 		}
-		void setFont(sf::Font& font) {
+		void setFont(const sf::Font& font) {
 			textbox.setFont(font);
 		}
 		void setPosition(sf::Vector2f pos) {
-			textbox.setPosition(pos);
+			rect.setPosition(pos);
+			textbox.setPosition(pos.x + 5, pos.y + 10);
 		}
 		void setLimit(bool hasLimit) {
 			this->hasLimit = hasLimit;
@@ -211,24 +216,25 @@ namespace Visual {
 		void setSelected(bool sel) {   //what the fuck?
 			isSelected = sel;
 			if (!sel) {
-				std::string s = text.str();
-				std::string newS = "";
+				std::wstring s = text.str();
+				std::wstring newS = L"";
 				for (int i = 0; i < s.length() - 1; ++i) {
 					newS += s[i];
 				}
 				textbox.setString(newS);
 			}
 		}
-		std::string getText() {
+		std::wstring getText() {
 			return text.str();
 		}
 		void drawTo(sf::RenderWindow& window) {
+			window.draw(rect);
 			window.draw(textbox);
 		}
 		void typedOn(sf::Event input) {
 			if (isSelected) {
 				int charTyped = input.text.unicode;
-				if (charTyped < 128) {
+				if (charTyped < 143859) {
 					if (hasLimit) {
 						if (text.str().length() <= limit) {			//why <=
 							inputLogic(charTyped);
@@ -244,45 +250,46 @@ namespace Visual {
 			}
 		}
 
+		bool isOverBox(sf::Vector2f click) {
+			
+		}
+
+		bool getSelected() {
+			return isSelected;
+		}
+
 
 	private:
+		sf::RectangleShape rect;
 		sf::Text textbox;
-		std::ostringstream text;
+		std::wstringstream text;
 		bool isSelected;
 		bool hasLimit;
 		int limit;
 		void inputLogic(int charTyped) {
 			if ((charTyped != DELETE_KEY) && (charTyped != ENTER_KEY) && (charTyped != ESCAPE_KEY)) {
-				text << static_cast<char>(charTyped); //write to string object
+				text << static_cast<wchar_t>(charTyped); //write to string object
 
 			}
-			else if (charTyped == DELETE_KEY) {
+			else if (charTyped == DELETE_KEY && text.str().length() > 0) {
 				deleteLastChar();
-
 			}
-			textbox.setString(text.str() + "_");
+			textbox.setString(text.str() + L"_");
 		}
 		void deleteLastChar() {
-			std::string s = text.str();
-			std::string newS = "";
+			std::wstring s = text.str();
+			std::wstring newS = L"";
 			for (int i = 0; i < s.length() - 1; ++i) {
 				newS += s[i];
 			}
-			text.str(""); //clean
+			text.str(L""); //clean
 			text << newS; //add newS to string output
 			//textbox.setString(newS);
-			textbox.setString(text.str() + "_");			//set the string to display
+			textbox.setString(text.str() + L"_");			//set the string to display
 		}
 	};
 
-	class BestPath {
-	public:
-		void updateData(std::vector<unsigned>& path, long len) {
-		}
-	private:
-		static sf::Text txt1;
-		static sf::Text txt2;
-	};
+
 
 	//Загрузка шрифтов и текстур
 	void prepareVisual();

@@ -67,6 +67,8 @@ namespace Algo {
 		nodes.clear();
 		routeVec.clear();
 		algoSpeed.store(95);
+		core::bestPath.len = 100000.0;
+		core::bestPath.route.clear();
 	};
 
 	void start() {
@@ -95,10 +97,10 @@ namespace Algo {
 			for (size_t i = 0; i < routes.size(); ++i) {
 				Algo::updatePheromone(routes[i]);
 			}
-			int minL = 10000000;
+			double minL = 10000000.f;
 			int minR = 0;
 			for (size_t i = 0; i < routes.size(); ++i) {
-				int curs = 0;
+				double curs = 0;
 				for (size_t j = 0; j < routes[i].size() - 1; ++j) {
 					curs += nodes[routes[i].at(j)].paths[routes[i].at(j + 1)].length;
 				}
@@ -107,6 +109,12 @@ namespace Algo {
 					minR = i;
 				}
 			}
+
+			core::bestPath.mut.lock();
+			core::bestPath.route = routes[minR];
+			std::cout << "BEST " << minL << std::endl;
+			if (core::bestPath.len > minL) core::bestPath.len = minL;
+			core::bestPath.mut.unlock();
 			
 			std::cout << "MINR " << minR;
 			Algo::updatePheromone(routes[minR], true);

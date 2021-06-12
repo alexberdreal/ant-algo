@@ -5,6 +5,16 @@
 #include <sstream>
 #include <string>
 
+/*
+	Планы:
+	1. Муравей --- тля
+	2. Перекрасить в разные цвета, в зав-ти от номера
+	3. Установить ограничение по количеству муравьев
+	4. Спросить у Оли насчет руссификации 
+
+*/
+
+
 int v = 8;
 
 namespace Visual {
@@ -25,7 +35,7 @@ namespace Visual {
 			std::cout << "Error while loading the font from the file" << std::endl;
 		};
 		sf::Texture* nodeTexture = new sf::Texture();
-		if (!(*nodeTexture).loadFromFile("../sources/Ant.png"))
+		if (!(*nodeTexture).loadFromFile("../sources/Aphid-1.png"))
 		{
 			std::cout << "Error while loading the ant from the file" << std::endl;
 		};
@@ -47,26 +57,12 @@ namespace Visual {
 		window.setPosition(sf::Vector2i(desktop.width / 2 - window.getSize().x / 2, desktop.height / 2 - window.getSize().y / 2));
 
 		if (&state == &core::state_started) {
-			TextBox textbox1(12, sf::Color::Black, true);
-		
-			textbox1.setFont(font_1);
-			textbox1.setPosition({ 10,10 });
-
 			//white background
-			window.clear(sf::Color::White);
-
 			//Button btn1("Click", { 10,10 }, { 100,100 }, sf::Color::White, sf::Color::Black, 2, font_1, 14, sf::Color::Black);
 
-			Button btn1 = Button::builder().setString("Statistics").setSize({ 180, 50 }).setPosition({ 200,200 }).build();
+			Button btn1 = Button::builder().setString("Feed").setSize({ 180, 50 }).setPosition({ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.5) }).build();
 
 			sf::Texture ant;
-			if (!ant.loadFromFile("../sources/Ant.png"))
-			{
-				std::cout << "Error" << std::endl;
-			}
-			sf::Sprite sprite_ant(ant, sf::IntRect(0, 0, static_cast<double>(window.getSize().x / 3), static_cast<double>((window.getSize().y / 10) * 6)));
-			sprite_ant.setPosition((window.getSize().x / 23) * 0.5 * 2 + static_cast<double>((window.getSize().x / 3) * 2), (window.getSize().y / 10) * 1.5);
-			sprite_ant.setScale(sf::Vector2f(0.2, 0.2));
 
 			sf::Texture btn;
 			if (!btn.loadFromFile("../sources/Button.png"))
@@ -76,7 +72,6 @@ namespace Visual {
 			sf::Sprite sprite_btn(btn);
 			sprite_btn.setPosition((window.getSize().x / 23) * 0.5 * 2 + static_cast<double>((window.getSize().x / 3) * 2), static_cast<double>(window.getSize().y / 10));
 			sprite_btn.setScale(sf::Vector2f(0.2, 0.2));
-			cmdStateChanged();
 			/*window.draw(sprite_grass);
 			textbox1.drawTo(window);
 			btn1.drawTo(window);
@@ -87,16 +82,51 @@ namespace Visual {
 
 			while (window.isOpen()) {
 				window.clear(sf::Color::White);
-
 				sf::Event event;					//class Event
 				while (window.pollEvent(event)) {
 					switch (event.type) {			//enum type
 					case sf::Event::Closed:
 						window.close();
 						break;
-					case sf::Event::TextEntered:	//enum {TextEntered}
-						textbox1.typedOn(event);
-						textbox1.drawTo(window);
+					case sf::Event::MouseButtonPressed:
+						if (btn1.isMouseOver(window)) {
+							btn1.setFill(sf::Color::Yellow);
+							return;
+						}
+						break;
+					case sf::Event::MouseMoved:
+						if (btn1.isMouseOver(window)) {
+							btn1.setFill(sf::Color::Green);
+						}
+						else {
+							btn1.setFill(sf::Color::White);
+						}
+						break;
+					}
+
+				}
+				window.draw(grassSprite);
+				for (auto& el : core::nodes) {
+					drawNode(el.getX(), el.getY());
+				}
+				btn1.drawTo(window);
+				
+				window.display();
+			}
+			/*window.clear();
+			textbox1.drawTo(window);
+			window.display();*/
+		};
+		if (&state == &core::state_nodes) {
+			Button btn1 = Button::builder().setString("Continue").setSize({ 180, 50 }).setPosition({ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.5) }).build();
+			while (window.isOpen()) {
+				window.clear(sf::Color::White);
+
+				sf::Event event;					//class Event
+				while (window.pollEvent(event)) {
+					switch (event.type) {			//enum type
+					case sf::Event::Closed:
+						window.close();
 						break;
 					case sf::Event::MouseButtonPressed:
 						if (btn1.isMouseOver(window)) {
@@ -106,7 +136,7 @@ namespace Visual {
 						if (isOverGrass((sf::Vector2f)sf::Mouse::getPosition(window))) {
 							std::cout << "OVER" << std::endl;
 							sf::Vector2f vec = getRightCoordinates((sf::Vector2f)sf::Mouse::getPosition(window));
-							core::nodes.push_back(core::Node{vec.x, vec.y, (unsigned)(core::nodes.size())});
+							core::nodes.push_back(core::Node{ vec.x, vec.y, (unsigned)(core::nodes.size()) });
 							drawNode(vec.x, vec.y);
 						}
 						break;
@@ -127,16 +157,69 @@ namespace Visual {
 				}
 				//textbox1.drawTo(window);
 				btn1.drawTo(window);
-				window.draw(sprite_btn);
-				
+
 				window.display();
 			}
-			/*window.clear();
-			textbox1.drawTo(window);
-			window.display();*/
 		};
-		if (&state == &core::state_nodes) {};
+		if (&state == &core::state_ants) {
+			TextBox tb(30, sf::Color::Black, true);
+			tb.setPosition({ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.65) });
+			tb.setFont(font_1);
+			Button btn1 = Button::builder().setString("Continue").setSize({ 180, 50 }).setPosition({ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.5) }).build();
+			while (window.isOpen()) {
+				window.clear(sf::Color::White);
+
+				sf::Event event;					//class Event
+				while (window.pollEvent(event)) {
+					switch (event.type) {			//enum type
+					case sf::Event::Closed:
+						window.close();
+						break;
+					case sf::Event::MouseButtonPressed:
+						if (btn1.isMouseOver(window)) {
+							btn1.setFill(sf::Color::Yellow);
+							core::numberOfAnts = stoi(tb.getText());
+							return;
+						}
+						break;
+					case sf::Event::TextEntered:	//enum {TextEntered}
+						tb.typedOn(event);
+						break;
+					case sf::Event::MouseMoved:
+						if (btn1.isMouseOver(window)) {
+							btn1.setFill(sf::Color::Green);
+						}
+						else {
+							btn1.setFill(sf::Color::White);
+						}
+						break;
+					}
+				}
+				window.draw(grassSprite);
+				for (auto& el : core::nodes) {
+					drawNode(el.getX(), el.getY());
+				}
+				tb.drawTo(window);
+				btn1.drawTo(window);
+				window.display();
+				}
+		}
 		if (&state == &core::state_execution) {				// нужно перенести отрисовку поля, узлов и т.д в отдельную функцию, чтобы вызывать при каждом стейте
+
+			sf::Text bestPathText;
+			bestPathText.setFont(font_1);
+			bestPathText.setString("Best path: ");
+			bestPathText.setCharacterSize(20);
+			bestPathText.setPosition(window.getSize().x * 0.75, window.getSize().y * 0.8);
+			bestPathText.setFillColor(sf::Color::Black);
+
+			sf::Text bestPathText2;
+			bestPathText2.setFont(font_1);
+			bestPathText2.setString("Best path: ");
+			bestPathText2.setCharacterSize(20);
+			bestPathText2.setPosition(window.getSize().x * 0.75, window.getSize().y * 0.85);
+			bestPathText2.setFillColor(sf::Color::Black);
+
 	
 			//white background
 			window.clear(sf::Color::White);
@@ -217,9 +300,24 @@ namespace Visual {
 					for (auto& el : core::nodes) {
 						drawNode(el.getX(), el.getY());
 					}
+					core::bestPath.mut.lock();
+					if (!core::bestPath.route.empty()) {
+					
+						bestPathText.setString("Best path len is " + std::to_string((int)std::round(core::bestPath.len)));
+						sf::String str = "Route: ";
+						for (auto& el : core::bestPath.route) {
+							str += std::to_string(el) + "->";
+						}
+						str.erase(str.getSize() - 2, 2);
+						bestPathText2.setString(str);
+
+					}
+					core::bestPath.mut.unlock();
 					//textbox1.drawTo(window);
 					btnStop.drawTo(window);
 					btnStats.drawTo(window);
+					window.draw(bestPathText);
+					window.draw(bestPathText2);
 
 					window.display();
 					b = true;
