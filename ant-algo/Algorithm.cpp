@@ -3,23 +3,23 @@
 namespace Algo {
 
 	// Поиск следующего пункта для муравья 
-	core::Node* findNext(const Node& node, std::vector<unsigned>& eaten) noexcept {																			
-		if (eaten.size() == nodes.size()) {																														// возвращаемся к муравейнику, если узлы кончились
+	[[nodiscard]] Node* findNext(const Node& node, std::vector<unsigned>& eaten) {																			
+		if (eaten.size() == nodes.size()) {																																										// возвращаемся к муравейнику, если узлы кончились
 			eaten.push_back(0);
-			routeVec.push_back({ (float)node.getX(), (float)node.getY(), (float)nodes[0].getX(), (float)nodes[0].getY() });
+			routeVec.push_back({ node.getX(), node.getY(), nodes[0].getX(), nodes[0].getY() });
 			return &nodes[0];
 		}
-		double r = (rand() % 100) / 100.0;																														// генерируем рандомное число
+		double r = (rand() % 100) / 100.0;																										//генерируем рандомное число
 		std::multimap<double, unsigned> m;																														// контейнер {вероятность: id узла}
 		double sum = 0;																																			// тау * ню (знаменатель из формулы)
 
-		for (auto it = node.paths.begin(); it != node.paths.end(); ++it) {																	
+		for (auto it = node.paths.cbegin(); it != node.paths.cend(); ++it) {																	
 			if (std::find(eaten.begin(), eaten.end(), it->first) == eaten.end()) {
 				sum += pow(it->second.pheromone, 3) / it->second.length;																						// считаем знаменатель
 			}
 		}	
 		double res = 0;																																		
-		for (auto it = node.paths.begin(); it != node.paths.end(); ++it) {
+		for (auto it = node.paths.cbegin(); it != node.paths.cend(); ++it) {
 			if (std::find(eaten.begin(), eaten.end(), it->first) == eaten.end()) {																				// если пища еще не съедена
 				res = pow(it->second.pheromone, 3) / it->second.length / sum;																					// сычитаем вероятность перехода node --> it->second
 				m.insert(std::make_pair(res, it->first));																										// добавляем эту вероятность в контейнер {вероятность: id узла}
@@ -27,7 +27,7 @@ namespace Algo {
 		}
 
 		double t = 0;																																			
-		for (auto& el : m) {																																	
+		for (const auto& el : m) {																																	
 			t += el.first;																																		// увеличиваем сумарную вероятность (0-1)
 			if (r <= t) {																																		// |--t1--------t2----------r--t--------|, где t1, t2 = t на предыдущих итерациях
 				eaten.push_back(el.second);																														// помечаем пищу как съеденную
@@ -60,17 +60,17 @@ namespace Algo {
 	};
 
 	// Сбросить состояние алгоритма (для состояния core::AppState::state_started)
-	void reset() {
+	void reset() noexcept {
 		numberOfAnts = 0;																																		// Муравьев нет
 		nodes.clear();																																			// Узлов нет
 		routeVec.clear();																																		// Текущий маршрут сброшен
 		algoSpeed.store(95);																																	// Скорость алгоритма дефолтная
-		core::bestPath.len = 100000.0;																															// Кратчайшая длина отсутствует
-		core::bestPath.route.clear();																															// Лучший путь отсутствует
+		BestPath::len = 100000.0;																															// Кратчайшая длина отсутствует
+		BestPath::route.clear();																															// Лучший путь отсутствует
 	};
 
 	// Запустить алгоритм
-	void start() {
+	void start() noexcept(false) {
 		std::vector<std::vector<unsigned>> routes;																												// Вектор из маршрутов отдельных муравьев
 		std::vector<unsigned> vec;																																// Маршрут текущего муравья (из id)
 		int c = 1;																																				// Текущая итерация
@@ -85,7 +85,7 @@ namespace Algo {
 					std::this_thread::sleep_for(std::chrono::milliseconds(algoSpeed.load()));																	// Ставим задержку
 					if (current == nullptr) throw std::runtime_error("The next node is not defined");															// Перехватываем ошибку из findNext
 				}
-				for (auto it = vec.begin(); it != vec.end(); ++it) {																							// Весь путь одного муравья
+				for (auto it = vec.cbegin(); it != vec.cend(); ++it) {																							// Весь путь одного муравья
 					std::cout << *it << ' ';																													// Логи
 				}
 				std::cout << std::endl;																									
@@ -109,13 +109,13 @@ namespace Algo {
 				}
 			}
 
-			core::bestPath.mut.lock();																															// Блокируем мьютекс лучшего пути для передачи данных main потоку
+			BestPath::mut.lock();																															// Блокируем мьютекс лучшего пути для передачи данных main потоку
 			std::cout << "Лучшая длина: " << minL << std::endl;																									// Логи
-			if (core::bestPath.len > minL) {																													// Передаем данные main потоку через структуру с мьютексом
-				core::bestPath.len = minL;
-				core::bestPath.route = routes[minR];
+			if (BestPath::len > minL) {																													// Передаем данные main потоку через структуру с мьютексом
+				BestPath::len = minL;
+				BestPath::route = routes[minR];
 			}
-			core::bestPath.mut.unlock();																														// Разблокируем мьютекс
+			BestPath::mut.unlock();																														// Разблокируем мьютекс
 			Algo::updatePheromone(routes[minR], true);																											// Запустим элитного муравья на самый короткий маршрут
 
 			routes.clear();																																		// Очистим маршруты всех муравьев

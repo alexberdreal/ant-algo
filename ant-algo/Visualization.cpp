@@ -5,54 +5,40 @@
 #include <sstream>
 #include <string>
 
-/*
-	Планы:
-	1. Муравей --- тля
-	2. Перекрасить в разные цвета, в зав-ти от номера
-	3. Установить ограничение по количеству муравьев
-	4. Спросить у Оли насчет руссификации 
-
-*/
-
-
 int v = 8;
 
 namespace Visual {
 
 	void cmdStateChanged() {
-		static HWND cmd = GetConsoleWindow();
+		static const HWND cmd = GetConsoleWindow();
 		showCmd= !showCmd;
-		if (showCmd) {
-			ShowWindow(cmd, SW_SHOW);
-			return;
-		}
-		ShowWindow(cmd, SW_HIDE);
+		showCmd ? ShowWindow(cmd, SW_SHOW) : ShowWindow(cmd, SW_HIDE);
 	}
 
 	void prepareVisual() {
 		if (!font_1.loadFromFile("../sources/Open_Sans/OpenSans-Bold.ttf"))
 		{
-			std::cout << "Error while loading the font from the file" << std::endl;
+			std::cout << "Ошибка: OpenSans-Bold.ttf не найден" << std::endl;
 		};
 		sf::Texture* grassTexture = new sf::Texture();
 		if (!(*grassTexture).loadFromFile("../sources/Grass.png"))
 		{
-			std::cout << "Error" << std::endl;
+			std::cout << "Ошибка: текстура травы не найдена" << std::endl;
 		}
 		sf::Texture* nodeTextureCol = new sf::Texture();
 		if (!(*nodeTextureCol).loadFromFile("../sources/Ant.png"))
 		{
-			std::cout << "Error while loading the ant from the file" << std::endl;
+			std::cout << "Ошибка: текстура муравья не найдена" << std::endl;
 		};
-		nodeSprite.push_back(sf::Sprite());
+		nodeSprite.emplace_back();
 		nodeSprite[0].setScale({ 0.1, 0.1 });
 		nodeSprite[0].setTexture(*nodeTextureCol);
 		for (size_t i = 1; i < 10; ++i) {
-			nodeSprite.push_back(sf::Sprite());
+			nodeSprite.emplace_back();
 			sf::Texture* nodeTexture = new sf::Texture();
 			if (!(*nodeTexture).loadFromFile("../sources/Aphid-"+std::to_string(i)+".png"))
 			{
-				std::cout << "Error while loading the ant from the file" << std::endl;
+				std::cout << "Ошибка: текстура тли не найдена" << std::endl;
 			};
 			nodeSprite[i].setScale({ 0.1, 0.1 });
 			nodeSprite[i].setTexture(*nodeTexture);
@@ -60,18 +46,16 @@ namespace Visual {
 		
 		grassSprite.setTexture(*grassTexture);
 		grassSprite.setPosition((window.getSize().x / 23) * 0.5, (window.getSize().y / 10));
-		grassSprite.setTextureRect(sf::IntRect(0, 0, static_cast<double>((window.getSize().x / 3) * 2), static_cast<double>((window.getSize().y / 10) * 8)));
-	}
-	void drawWindow(const core::AppState& state) {
+		grassSprite.setTextureRect(sf::IntRect(0, 0, (window.getSize().x / 3) * 2,(window.getSize().y / 10) * 8));
 		//window setup
-		auto desktop = sf::VideoMode::getDesktopMode();
+		static const auto desktop = sf::VideoMode::getDesktopMode();
 		window.setPosition(sf::Vector2i(desktop.width / 2 - window.getSize().x / 2, desktop.height / 2 - window.getSize().y / 2));
+	}
+	void setState(const core::AppState& state) {
 
 		if (state == core::AppState::state_started) {
-			//white background
-			//Button btn1("Click", { 10,10 }, { 100,100 }, sf::Color::White, sf::Color::Black, 2, font_1, 14, sf::Color::Black);
 
-			Button btn1 = Button::builder().setString(L"Начать").setSize({ 180, 50 }).setOutlineColor(sf::Color::Black).setOutlineThickness(2).setPosition({ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.5) }).build();
+			Button btn1 = Button::builder().setString(L"Начать").setPosition({ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.5) }).build();
 
 			sf::Texture ant;
 
@@ -98,6 +82,7 @@ namespace Visual {
 					switch (event.type) {			//enum type
 					case sf::Event::Closed:
 						window.close();
+						exit(EXIT_SUCCESS);
 						break;
 					case sf::Event::MouseButtonPressed:
 						if (btn1.isMouseOver(window)) {
@@ -117,7 +102,7 @@ namespace Visual {
 
 				}
 				window.draw(grassSprite);
-				for (auto& el : core::nodes) {
+				for (const auto& el : core::nodes) {
 					drawNode(&el);
 				}
 				btn1.drawTo(window);
@@ -129,7 +114,9 @@ namespace Visual {
 			window.display();*/
 		};
 		if (state == core::AppState::state_nodes) {
-			Button btn1 = Button::builder().setString(L"Далее").setOutlineThickness(2).setOutlineColor(sf::Color::Black).setSize({ 180, 50 }).setPosition({ (float)(window.getSize().x * 0.8), (float)(window.getSize().y * 0.5) }).build();
+
+			Button btn1 = Button::builder().setString(L"Далее").setPosition(static_cast<float>(window.getSize().x * 0.8), static_cast<float>(window.getSize().y * 0.5)).build();
+
 			while (window.isOpen()) {
 				window.clear(sf::Color::White);
 
@@ -137,7 +124,8 @@ namespace Visual {
 				while (window.pollEvent(event)) {
 					switch (event.type) {			//enum type
 					case sf::Event::Closed:
-						window.close();
+					window.close();
+					exit(EXIT_SUCCESS);
 						break;
 					case sf::Event::MouseButtonPressed:
 						if (btn1.isMouseOver(window)) {
@@ -147,7 +135,7 @@ namespace Visual {
 						if (isOverGrass((sf::Vector2f)sf::Mouse::getPosition(window))) {
 							if (core::nodes.size() == 10) continue;
 							sf::Vector2f vec = getRightCoordinates((sf::Vector2f)sf::Mouse::getPosition(window));
-							core::nodes.push_back(core::Node{ vec.x, vec.y, (unsigned)(core::nodes.size()) });
+							core::nodes.emplace_back(vec.x, vec.y, core::nodes.size());
 							drawNode(&core::nodes[core::nodes.size() - 1]);
 						}
 						break;
@@ -163,7 +151,7 @@ namespace Visual {
 
 				}
 				window.draw(grassSprite);
-				for (auto& el : core::nodes) {
+				for (const auto& el : core::nodes) {
 					drawNode(&el);
 				}
 				//textbox1.drawTo(window);
@@ -191,6 +179,7 @@ namespace Visual {
 					switch (event.type) {			//enum type
 					case sf::Event::Closed:
 						window.close();
+						exit(EXIT_SUCCESS);
 						break;
 					case sf::Event::MouseButtonPressed:
 						if (btn1.isMouseOver(window)) {
@@ -216,7 +205,7 @@ namespace Visual {
 					}
 				}
 				window.draw(grassSprite);
-				for (auto& el : core::nodes) {
+				for (const auto& el : core::nodes) {
 					drawNode(&el);
 				}
 				tb.drawTo(window);
@@ -325,22 +314,22 @@ namespace Visual {
 							break;
 						}
 					}
-					for (auto& el : core::nodes) {
+					for (const auto& el : core::nodes) {
 						drawNode(&el);
 					}
-					core::bestPath.mut.lock();
-					if (!core::bestPath.route.empty()) {
+					core::BestPath::mut.lock();
+					if (!core::BestPath::route.empty()) {
 						
-						bestPathText.setString(L"Кратчайшая длина: " + std::to_wstring((int)std::round(core::bestPath.len)) + L" пикс.");
+						bestPathText.setString(L"Кратчайшая длина: " + std::to_wstring((int)std::round(core::BestPath::len)) + L" пикс.");
 						sf::String str = L"";
-						for (auto& el : core::bestPath.route) {
+						for (const auto& el : core::BestPath::route) {
 							str += std::to_wstring(el) + L"->";
 						}
 						str.erase(str.getSize() - 2, 2);
 						bestPathText3.setString(str);
 
 					}
-					core::bestPath.mut.unlock();
+					core::BestPath::mut.unlock();
 					//textbox1.drawTo(window);
 					btnStop.drawTo(window);
 					btnStats.drawTo(window);
@@ -452,14 +441,14 @@ namespace Visual {
 	};
 
 	sf::Vector2f getRightCoordinates(sf::Vector2f clickPos) {
-		float grx = window.getSize().x / 3 * 2;
-		float gry = window.getSize().y / 10 * 8;
-		float posx = (window.getSize().x / 23) * 0.5;
-		float posy = window.getSize().y / 10;
-		static float rBound = posx + grx - nodeSprite[1].getTexture()->getSize().x / 10;
-		static float lBound = posx + nodeSprite[1].getTexture()->getSize().x / 10;
-		static float tBound = posy + nodeSprite[1].getTexture()->getSize().y / 10;
-		static float bBound = posy + gry - nodeSprite[1].getTexture()->getSize().y / 10;
+		const float grx = window.getSize().x / 3 * 2;
+		const float gry = window.getSize().y / 10 * 8;
+		const float posx = (window.getSize().x / 23) * 0.5;
+		const float posy = window.getSize().y / 10;
+		const static float rBound = posx + grx - nodeSprite[1].getTexture()->getSize().x / 10;
+		const static float lBound = posx + nodeSprite[1].getTexture()->getSize().x / 10;
+		const static float tBound = posy + nodeSprite[1].getTexture()->getSize().y / 10;
+		const static float bBound = posy + gry - nodeSprite[1].getTexture()->getSize().y / 10;
 		if (clickPos.x < rBound && clickPos.x > lBound && clickPos.y > tBound && clickPos.y < bBound) {
 			return clickPos;
 		}
@@ -495,14 +484,12 @@ namespace Visual {
 			if (clickPos.y > bBound)  // 8
 			{
 				return sf::Vector2f{ clickPos.x, bBound + nodeSprite[1].getTexture()->getSize().y / 20 };
-			}
+			} 
 		}
 	}
 
-	
-
 	// Изменение толщины тропы из феромонов A(x1,y1) --> B(x2,y2)
-	void updatePheromones(double x1, double y1, double x2, double y2) {
+	void updatePheromones(float x1, float y1, float x2, float y2) {
 
 	};
 

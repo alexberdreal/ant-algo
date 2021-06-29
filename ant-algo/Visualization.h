@@ -8,6 +8,8 @@
 #include <string>
 #include <iostream>
 
+using namespace core;
+
 //for TextBox
 constexpr auto DELETE_KEY = 8;
 constexpr auto ENTER_KEY = 13;
@@ -39,10 +41,10 @@ namespace Visual {
 			handSize.y = 20.0;
 			lineSize.x = 200.0;
 			lineSize.y = 3.0;
-			linePos.x = window.getSize().x * 0.3;
-			linePos.y = window.getSize().y * 0.95;
-			handPos.x = (float)(linePos.x + lineSize.x / 2 - handSize.x / 2);
-			handPos.y = (float)(linePos.y) - handSize.y / 2;
+			linePos.x = window.getSize().x * 0.3f;
+			linePos.y = window.getSize().y * 0.95f;
+			handPos.x = linePos.x + lineSize.x / 2 - handSize.x / 2;
+			handPos.y = linePos.y - handSize.y / 2;
 
 			handShape.setFillColor(sf::Color::Blue);
 			handShape.setSize(handSize);
@@ -51,18 +53,18 @@ namespace Visual {
 			lineShape.setPosition(linePos);
 			handShape.setPosition(handPos);
 		}
-		void setPos(float x) {
+		constexpr void setPos(float x) noexcept {
 				handPos.x = x;
 				if (x <= linePos.x) handPos.x = linePos.x;
 				if (x >= linePos.x + lineSize.x) handPos.x = linePos.x + lineSize.x;
 				handShape.setPosition(handPos.x, handPos.y);	
 				algoSpeed.store(0.75*(linePos.x + lineSize.x - handPos.x)/2 + 0.75 * (linePos.x + lineSize.x - handPos.x) * 0.1);
 		}
-		void draw(sf::RenderWindow& wind) {
-			wind.draw(lineShape);
-			wind.draw(handShape);
+		void draw(sf::RenderWindow& window) const noexcept {
+			window.draw(lineShape);
+			window.draw(handShape);
 		}
-		bool isSliderOver(float x, float y) {
+		[[nodiscard]] constexpr bool isSliderOver(float x, float y) const noexcept {
 			if (inTarget) {
 				return (x <= linePos.x + lineSize.x) && (x >= linePos.x);
 			}
@@ -70,18 +72,18 @@ namespace Visual {
 				return (y <= handPos.y + handSize.y) && (y >= handPos.y) && (x <= linePos.x + lineSize.x) && (x >= linePos.x);
 			}
 		}
-		void setInTarget(bool is) {
+		void setInTarget(bool is) noexcept{
 			inTarget = is;
 		}
-		bool isInTarget() {
+		bool isInTarget() const noexcept {
 			return inTarget;
 		}
-		bool isMouseOver(sf::RenderWindow& win) {
+		[[nodiscard]] bool isMouseOver(sf::RenderWindow& win) const noexcept {
 			int x = sf::Mouse::getPosition(window).x;
 			int y = sf::Mouse::getPosition(window).y;
 			return isSliderOver(x, y);
 		}
-		sf::Vector2f getHandSize() {
+		[[nodiscard]] sf::Vector2f getHandSize() const noexcept {
 			return handSize;
 		}
 	};
@@ -152,6 +154,11 @@ namespace Visual {
 
 	class Button::builder { //definition
 	public:
+		Button::builder() {
+			setOutlineColor(sf::Color::Black);
+			setOutlineThickness(2);
+			setSize({ 180, 50 });
+		}
 		builder& setPosition(sf::Vector2f pos) {
 			button.setPosition(pos);
 			float xPos = pos.x + button.getSize().x / 2 - text.getGlobalBounds().width / 2;
@@ -159,6 +166,13 @@ namespace Visual {
 			text.setPosition(xPos, yPos); 
 			return *this; 
 		};
+		builder& setPosition(float x, float y) {
+			button.setPosition(x, y);
+			float xPos = x + button.getSize().x / 2 - text.getGlobalBounds().width / 2;
+			float yPos = y + button.getSize().y / 2 - text.getGlobalBounds().height / 1.5;
+			text.setPosition(xPos, yPos);
+			return *this;
+		}
 		builder& setSize(sf::Vector2f size) { button.setSize(size); return *this; }
 		builder& setFillColor(sf::Color color) { button.setFillColor(color); return *this; };
 		builder& setOutlineColor(sf::Color color) { button.setOutlineColor(color); return *this; };
@@ -219,7 +233,7 @@ namespace Visual {
 			if (!sel) {
 				std::wstring s = text.str();
 				std::wstring newS = L"";
-				for (int i = 0; i < s.length() - 1; ++i) {
+				for (size_t i = 0; i < s.length() - 1; ++i) {
 					newS += s[i];
 				}
 				textbox.setString(newS);
@@ -266,7 +280,7 @@ namespace Visual {
 		std::wstringstream text;
 		bool isSelected;
 		bool hasLimit;
-		int limit;
+		size_t limit;
 		void inputLogic(int charTyped) {
 			if ((charTyped != DELETE_KEY) && (charTyped != ENTER_KEY) && (charTyped != ESCAPE_KEY)) {
 				text << static_cast<wchar_t>(charTyped); //write to string object
@@ -281,7 +295,7 @@ namespace Visual {
 		void deleteLastChar() {
 			std::wstring s = text.str();
 			std::wstring newS = L"";
-			for (int i = 0; i < s.length() - 1; ++i) {
+			for (size_t i = 0; i < s.length() - 1; ++i) {
 				newS += s[i];
 			}
 			text.str(L""); //clean
@@ -297,22 +311,16 @@ namespace Visual {
 	void prepareVisual();
 
 	// Отрисовка главного окна и его внутреннего содержимого
-	void drawWindow(const core::AppState& state);
+	void setState(const AppState& state);
 
 	// Обновление статистики внутри окна
 	void updateStatistics();
 
 	// Отрисовка вершин графа (муравейника и пищи)
-	void drawNode(const core::Node* node);
+	void drawNode(const Node* node);
 
 	// Отрисовка пути p1 --> p2
 	void drawPath(sf::Vector2f p1, sf::Vector2f p2);
-
-	// Изменение толщины тропы из феромонов A(x1,y1) --> B(x2,y2)
-	void updatePheromones(double x1, double y1, double x2, double y2);
-
-	// Ожидание события
-	core::AppEvent waitForEvent();
 
 	void cmdStateChanged();
 
@@ -324,6 +332,7 @@ namespace Visual {
 
 	// Стереть граф, очистить статистику
 	void clean();
+
 }
 
 
